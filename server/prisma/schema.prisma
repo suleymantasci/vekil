@@ -1,0 +1,293 @@
+// Vekil - Multi-Tenant PostgreSQL Schema with RLS
+// Generator configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+// DataSource
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  SUPER_ADMIN
+  ORGANIZATION_ADMIN
+  BUILDING_MANAGER
+  RESIDENT
+  SECURITY
+  TECHNICIAN
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+}
+
+// ============================================
+// ORGANIZATION (Tenant)
+// ============================================
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  buildings     Building[]
+  users         User[]
+  roles         Role[]
+  permissions   Permission[]
+  rolePermissions RolePermission[]
+  auditLogs     AuditLog[]
+
+  @@map("organizations")
+}
+
+// ============================================
+// BUILDING (Site / Apartman)
+// ============================================
+model Building {
+  id             String   @id @default(uuid())
+  organizationId String   @map("organization_id")
+  name           String
+  address        String
+  city           String?
+  district       String?
+  latitude       Float?
+  longitude      Float?
+  totalFloors    Int      @default(1) @map("total_floors")
+  totalApartments Int     @map("total_apartments")
+  managerName    String?  @map("manager_name")
+  managerPhone   String?  @map("manager_phone")
+  managerEmail   String?  @map("manager_email")
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartments   Apartment[]
+  assets       Asset[]
+
+  @@map("buildings")
+}
+
+// ============================================
+// APARTMENT (Daire)
+// ============================================
+model Apartment {
+  id             String   @id @default(uuid())
+  buildingId     String   @map("building_id")
+  number         String   // "101", "102", "1A" gibi
+  floor          Int
+  block          String?  // A, B, C blok
+  areaM2         Float    @map("area_m2")
+  shareRatio     Float    @map("share_ratio") // Arsa payı oranı
+  type           String   @default("residential") // residential, commercial
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  users    User[]
+
+  @@unique([buildingId, number])
+  @@map("apartments")
+}
+
+// ============================================
+// USER
+// ============================================
+model User {
+  id             String    @id @default(uuid())
+  organizationId String    @map("organization_id")
+  apartmentId    String?   @map("apartment_id")
+  roleId         String    @map("role_id")
+  email          String    @unique
+  passwordHash   String    @map("password_hash")
+  firstName      String    @map("first_name")
+  lastName       String    @map("last_name")
+  phone          String    // Encrypted
+  phoneEncrypted Boolean   @default(true) @map("phone_encrypted")
+  tcNo           String?   @map("tc_no") // Encrypted
+  isActive       Boolean   @default(true) @map("is_active")
+  emailVerified  Boolean   @default(false) @map("email_verified")
+  phoneVerified  Boolean   @default(false) @map("phone_verified")
+  lastLoginAt    DateTime? @map("last_login_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartment    Apartment?   @relation(fields: [apartmentId], references: [id])
+  role         Role         @relation(fields: [roleId], references: [id])
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+// ============================================
+// ROLE & PERMISSION
+// ============================================
+model Role {
+  id             String       @id @default(uuid())
+  organizationId String      @map("organization_id")
+  name           String
+  description    String?
+  isSystem       Boolean      @default(false) @map("is_system") // Sistem rolleri değiştirilemez
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  users          User[]
+  permissions    RolePermission[]
+
+  @@unique([organizationId, name])
+  @@map("roles")
+}
+
+model Permission {
+  id             String       @id @default(uuid())
+  name           String      // "users:create", "buildings:read"
+  resource       String      // "users", "buildings", "apartments"
+  action         String      // "create", "read", "update", "delete"
+  description    String?
+  createdAt      DateTime     @default(now()) @map("created_at")
+
+  organizations  Organization[]
+  rolePermissions RolePermission[]
+
+  @@unique([name])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ============================================
+// ASSET (Demirbaş - Jeneratör, Asansör, Havuz)
+// ============================================
+model Asset {
+  id          String   @id @default(uuid())
+  buildingId  String   @map("building_id")
+  name        String
+  type        String   // "elevator", "generator", "pool", "hvac", "other"
+  brand       String?
+  model       String?
+  serialNo    String?  @map("serial_no")
+  warrantyEnd DateTime? @map("warranty_end")
+  installDate DateTime? @map("install_date")
+  location    String?  // "Bodrum kat", "Çatı"
+  notes       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  building   Building      @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  workOrders WorkOrder[]
+
+  @@map("assets")
+}
+
+// ============================================
+// WORK ORDER (Teknik Servis İş Emri)
+// ============================================
+model WorkOrder {
+  id          String      @id @default(uuid())
+  assetId     String?     @map("asset_id")
+  reportedBy  String      @map("reported_by") // User ID
+  assignedTo  String?     @map("assigned_to") // User ID
+  title       String
+  description String
+  priority    String      @default("medium") // low, medium, high, urgent
+  status      String      @default("open") // open, in_progress, pending, resolved, closed
+  category    String?     // "electrical", "plumbing", "structural", "other"
+  location    String?
+  photos      String[]    // URL array
+  resolution  String?
+  resolvedAt  DateTime?   @map("resolved_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  asset     Asset? @relation(fields: [assetId], references: [id])
+  reporter  User   @relation("WorkOrderReporter", fields: [reportedBy], references: [id])
+  assignee  User?  @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
+
+  @@map("work_orders")
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+model AuditLog {
+  id             String      @id @default(uuid())
+  userId         String      @map("user_id")
+  organizationId String      @map("organization_id")
+  action         AuditAction
+  resource       String
+  resourceId     String?     @map("resource_id")
+  oldValue       Json?       @map("old_value")
+  newValue       Json?       @map("new_value")
+  ipAddress      String?     @map("ip_address")
+  userAgent      String?     @map("user_agent")
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  user         User         @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+// ============================================
+// REFRESH TOKEN
+// ============================================
+model RefreshToken {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  token        String   @unique
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ============================================
+// KVKK Consent (WhatsApp onay)
+// ============================================
+model KvkKConsent {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  channel     String   // "whatsapp", "email", "sms"
+  purpose     String   // "chatbot", "notification", "marketing"
+  granted     Boolean
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  grantedAt   DateTime @map("granted_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, channel, purpose])
+  @@map("kvkk_consents")
+}
