@@ -57,6 +57,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: '/dashboard', label: 'Ana Sayfa', icon: '🏠' },
     { href: '/buildings', label: 'Binalar', icon: '🏢' },
+    { href: '/charges', label: 'Tahakkuk', icon: '💰' },
+    { href: '/payments', label: 'Ödemeler', icon: '💳' },
+    { href: '/settings/tahakkuk-rules', label: 'Aidat Kuralları', icon: '📋' },
     { href: '/users', label: 'Kullanıcılar', icon: '👥' },
     { href: '/roles', label: 'Roller', icon: '🔐' },
     { href: '/audit', label: 'Denetim Logları', icon: '📋' },
@@ -78,7 +81,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-4">
+        <nav className="flex-1 py-4 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -117,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
           <h1 className="text-lg font-semibold text-gray-900">
@@ -131,7 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <div className="p-6">
+        <div className="flex-1 p-6">
           {children}
         </div>
       </main>
