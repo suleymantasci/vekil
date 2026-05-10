@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../auth/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
-import { paginate } from '../common/interfaces/api-response.interface';
+import { paginate } from '../common/interfaces/database/pagination.interface';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +14,7 @@ export class UsersService {
     const [users, total] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         where: { organizationId },
-        include: { roles: { include: { roles: { include: { role: true } } } }, apartment: { include: { building: true } } },
+        include: { roles: { include: { role: true } }, apartment: { include: { building: true } } },
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -28,7 +28,7 @@ export class UsersService {
   async findOne(id: string, organizationId: string) {
     const user = await this.prisma.user.findFirst({
       where: { id, organizationId },
-      include: { roles: { include: { roles: { include: { role: true } } } }, apartment: { include: { building: true } } },
+      include: { roles: { include: { role: true } }, apartment: { include: { building: true } } },
     });
     if (!user) throw new Error('Kullanıcı bulunamadı');
     return user;
@@ -40,20 +40,26 @@ export class UsersService {
     const user = await this.prisma.user.create({
       data: {
         organizationId,
-        roleId: dto.roleId,
         email: dto.email,
         passwordHash,
         firstName: dto.firstName,
         lastName: dto.lastName,
         phone: dto.phone,
+        buildingId: dto.buildingId,
         apartmentId: dto.apartmentId,
       },
       include: { roles: { include: { role: true } } },
     });
 
+    // Create user role if roleId provided
+    if (dto.roleId) {
+      await this.prisma.userRole.create({
+        data: { userId: user.id, roleId: dto.roleId },
+      });
+    }
+
     await this.prisma.auditLog.create({
       data: {
-        userId: organizationId, // will be set by interceptor
         organizationId,
         action: 'CREATE',
         resource: 'users',
