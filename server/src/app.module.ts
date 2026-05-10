@@ -11,9 +11,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { BuildingsModule } from './buildings/buildings.module';
 import { ApartmentsModule } from './apartments/apartments.module';
 import { RolesModule } from './roles/roles.module';
-
-// Config
-@Configuration configuration
+import { PrismaModule } from './auth/prisma.module';
 
 @Module({
   imports: [
@@ -25,7 +23,7 @@ import { RolesModule } from './roles/roles.module';
     // Rate limiting: 100 req/min
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: () => ({
+      useFactory: (config: ConfigService) => ({
         throttlers: [{ ttl: 60000, limit: 100 }],
       }),
     }),
@@ -39,6 +37,9 @@ import { RolesModule } from './roles/roles.module';
         signOptions: { expiresIn: '15m' },
       }),
     }),
+
+    // Global Prisma Module
+    PrismaModule,
 
     // Feature Modules
     AuthModule,
