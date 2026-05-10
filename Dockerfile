@@ -1,31 +1,20 @@
-FROM node:22-alpine AS base
-
+FROM node:22-bookworm AS base
 WORKDIR /app
-
-# Server dependencies
-FROM base AS server-deps
-WORKDIR /app/server
-COPY server/package*.json ./
-RUN npm ci --legacy-peer-deps
-
-# Server build
-FROM base AS server-build
-WORKDIR /app/server
-COPY --from=server-deps /app/server/node_modules ./node_modules
-COPY server/prisma ./prisma
-RUN npx prisma generate
-COPY server/ ./
 
 # Server runtime
 FROM base AS server-run
 WORKDIR /app/server
-COPY --from=server-build /app/server/dist ./dist
-COPY --from=server-build /app/server/node_modules ./node_modules
-COPY --from=server-build /app/server/node_modules/.prisma ./node_modules/.prisma
+RUN npm install -g ts-node
+COPY server/package*.json ./
+RUN npm ci --legacy-peer-deps
+COPY server/prisma ./prisma
+RUN npx prisma generate
+COPY server/tsconfig.json ./
+COPY server/src ./src
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+CMD ["npx", "ts-node", "--transpile-only", "src/main.ts"]
 
-# Client dependencies
+# Client deps
 FROM base AS client-deps
 WORKDIR /app/client
 COPY client/package*.json ./
