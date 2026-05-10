@@ -53,16 +53,16 @@
 ### ⏳ Faz 5 — GEO/SEO ve Rakip Analizi
 
 #### Faz 5-1: Bildirim & Duyuru Sistemi
-- [ ] NotificationsModule (backend) - model zaten var
-- [ ] AnnouncementsModule (backend) - model zaten var
-- [ ] Frontend: notification bell + announcement list
-- [ ] Bildirim gönderme API (email/push placeholder)
+- [x] NotificationsModule (backend) - model zaten var
+- [x] AnnouncementsModule (backend) - model zaten var
+- [x] Frontend: notification bell + announcement list
+- [x] Bildirim gönderme API (email/push placeholder)
 
 #### Faz 5-2: Döküman Yönetimi
-- [ ] Document model (döküman meta + file storage)
-- [ ] DocumentModule (upload, list, download)
-- [ ] Local file storage (veya S3 placeholder)
-- [ ] Frontend document list/view
+- [x] Document model (döküman meta + file storage)
+- [x] DocumentModule (upload, list, download)
+- [x] Local file storage (veya S3 placeholder)
+- [x] Frontend document list/view
 
 #### Faz 5-3: Muhasebe & Raporlama
 - [ ] IncomeExpense model (gelir-gider kayıtları)

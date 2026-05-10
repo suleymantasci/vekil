@@ -65,6 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/reservations', label: 'Rezervasyonlar', icon: '📅' },
     { href: '/meetings', label: 'Toplantılar', icon: '🏛️' },
     { href: '/announcements', label: 'Duyurular', icon: '📢' },
+    { href: '/documents', label: 'Dökümanlar', icon: '📁' },
     { href: '/purchases', label: 'Satın Alma', icon: '🛒' },
     { href: '/settings/tahakkuk-rules', label: 'Aidat Kuralları', icon: '📋' },
     { href: '/users', label: 'Kullanıcılar', icon: '👥' },

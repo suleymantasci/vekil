@@ -39,6 +39,9 @@ import { PurchasesModule } from './purchases/purchases.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 
+// Phase 5-2: Döküman Yönetimi
+import { DocumentsModule } from './documents/documents.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -110,6 +113,9 @@ import { AnnouncementsModule } from './announcements/announcements.module';
     // Phase 5-1: Bildirim & Duyuru Sistemi
     NotificationsModule,
     AnnouncementsModule,
+
+    // Phase 5-2: Döküman Yönetimi
+    DocumentsModule,
   ],
   controllers: [],
   providers: [],
