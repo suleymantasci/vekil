@@ -187,7 +187,7 @@ export class TahakkukService {
         payments: true,
         lateFees: true,
       },
-      orderBy: { apartment: { number: 'asc' } },
+      orderBy: { apartment: { unitNumber: 'asc' } },
     });
   }
 
