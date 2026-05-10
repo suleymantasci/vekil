@@ -3,7 +3,7 @@
 **Proje:** Vekil  
 **Domain:** vekil.tasci.cloud  
 **GitHub:** github.com/suleymantasci/vekil  
-**Durum:** Faz 4 Tamamlandı — Faz 5'e Geçiliyor
+**Durum:** Faz 5 Tamamlandı ✓ — Tüm Modüller Hazır
 
 ---
 
@@ -96,14 +96,16 @@
 - [x] Frontend: sayaç listesi + okuma ekleme modal
 
 #### Faz 5-8: PWA Mobil Desteği
-- [ ] Service worker + manifest
-- [ ] Offline support (basis)
-- [ ] Push notifications (web push)
+- [x] manifest.json (PWA metadata)
+- [x] sw.js (service worker - cache, offline support)
+- [x] offline.html (offline fallback page)
+- [x] Layout with SW registration
+- [x] Apple Web App meta tags
 
 ---
 
 ## Son Commit
-- `41e0e5a` - feat(vekil): Phase 4 complete
+- `aaaa484` - Phase 5-7 (Meter Management)
 
 ## Commit History
 - `42c35ff` - Phase 1 foundation
@@ -115,6 +117,14 @@
 - `85efd3c` - Phase 3 tests + WhatsApp keyword fixes (70 tests)
 - `4c1029c` - Phase 4 backend modules
 - `41e0e5a` - Phase 4 UI + tests (98 passing)
+- `274d537` - Phase 5-1 (Notifications & Announcements)
+- `97fa7d7` - Phase 5-2 (Document Management)
+- `1e10302` - Phase 5-3 (Accounting & Reporting)
+- `e361cf9` - Phase 5-4 (Online Payment Requests)
+- `333b378` - Phase 5-5 (SEO & Performance)
+- `24299b2` - Phase 5-6 (Visitor Management)
+- `aaaa484` - Phase 5-7 (Meter Management)
+- `xxxxxxx` - Phase 5-8 (PWA Mobile)
 
 ## WhatsApp Chatbot Komutları
 - `/borcum` - Borç durumu sorgulama

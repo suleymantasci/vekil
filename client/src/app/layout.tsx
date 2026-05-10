@@ -1,6 +1,21 @@
 import { Metadata } from 'next';
 import './globals.css';
 
+// Service worker registration script (client-side only)
+const serviceWorkerScript = `
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered:', registration.scope);
+        })
+        .catch(error => {
+          console.log('SW registration failed:', error);
+        });
+    });
+  }
+`;
+
 // SEO Metadata - JSON-LD structured data for Organization
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -27,7 +42,7 @@ const jsonLd = {
 export const metadata: Metadata = {
   title: 'Vekil - Otonom Apartman ve Site Yönetimi',
   description: 'AI destekli apartman ve site yönetimi SaaS platformu. WhatsApp ile borç sorgulama, otomatik aidat, teknik servis ve rezervasyon yönetimi.',
-  keywords: ['apartman yönetimi', 'site yönetimi', 'aidat yönetimi', ' condominium yönetim', 'Turkish property management', 'apartman yönetim programı'],
+  keywords: ['apartman yönetimi', 'site yönetimi', 'aidat yönetimi', 'condominium yönetim', 'Turkish property management', 'apartman yönetim programı'],
   authors: [{ name: 'Vekil' }],
   creator: {
     name: 'Vekil',
@@ -37,6 +52,7 @@ export const metadata: Metadata = {
     name: 'Vekil',
     url: 'https://vekil.tasci.cloud',
   },
+  manifest: '/manifest.json', // PWA manifest
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
@@ -72,6 +88,11 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code', // Replace with actual
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Vekil',
   },
 };
 
@@ -129,6 +150,14 @@ export default function RootLayout({
         {/* Theme color */}
         <meta name="theme-color" content="#2563eb" />
         <meta name="color-scheme" content="light" />
+        
+        {/* iOS PWA */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Vekil" />
+        
+        {/* Service Worker Registration */}
+        <script dangerouslySetInnerHTML={{ __html: serviceWorkerScript }} />
       </head>
       <body className="min-h-screen bg-white">{children}</body>
     </html>
