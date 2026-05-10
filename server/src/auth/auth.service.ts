@@ -98,10 +98,13 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.organizationId);
 
     // Audit log - wrapped in try/catch to prevent auth failures
-    const auditCreate = this.prisma?.auditLog?.create;
+    const auditLog = this.prisma?.auditLog;
+    console.log('[DEBUG] auditLog:', auditLog, 'keys:', auditLog ? Object.keys(auditLog).slice(0,10) : 'null');
+    const auditCreate = auditLog?.create;
+    console.log('[DEBUG] auditCreate:', typeof auditCreate);
     if (typeof auditCreate === 'function') {
       try {
-        await auditCreate.call(this.prisma.auditLog, {
+        await auditCreate.call(auditLog, {
           data: {
             userId: user.id,
             organizationId: user.organizationId,
@@ -114,7 +117,7 @@ export class AuthService {
         console.error('AuditLog error (non-fatal):', err.message);
       }
     } else {
-      console.error('[DEBUG] auditLog.create not available, auditLog type:', typeof this.prisma?.auditLog);
+      console.error('[DEBUG] auditLog.create not available, auditLog type:', typeof auditLog);
     }
 
     return {
