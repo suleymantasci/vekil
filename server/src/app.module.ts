@@ -18,6 +18,11 @@ import { TahakkukModule } from './tahakkuk/tahakkuk.module';
 import { PaymentsModule } from './payments/payments.module';
 import { LateFeesModule } from './late-fees/late-fees.module';
 
+// Phase 3 Modules
+import { WorkOrdersModule } from './work-orders/work-orders.module';
+import { AssetsModule } from './assets/assets.module';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -58,6 +63,11 @@ import { LateFeesModule } from './late-fees/late-fees.module';
     TahakkukModule,
     PaymentsModule,
     LateFeesModule,
+
+    // Phase 3 Modules
+    WorkOrdersModule,
+    AssetsModule,
+    WhatsAppModule,
   ],
   controllers: [],
   providers: [],

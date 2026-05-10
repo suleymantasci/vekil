@@ -90,6 +90,23 @@ async function main() {
     { name: 'invoices:update', resource: 'invoices', action: 'update', description: 'Fatura güncelleme' },
     { name: 'invoices:delete', resource: 'invoices', action: 'delete', description: 'Fatura silme' },
     { name: 'invoices:send', resource: 'invoices', action: 'send', description: 'Fatura gönderme' },
+
+    // === PHASE 3: WORK ORDERS & ASSETS ===
+    { name: 'workorders:create', resource: 'work_orders', action: 'create', description: 'İş emri oluşturma' },
+    { name: 'workorders:read', resource: 'work_orders', action: 'read', description: 'İş emri görüntüleme' },
+    { name: 'workorders:update', resource: 'work_orders', action: 'update', description: 'İş emri güncelleme' },
+    { name: 'workorders:delete', resource: 'work_orders', action: 'delete', description: 'İş emri silme' },
+    { name: 'workorders:assign', resource: 'work_orders', action: 'assign', description: 'İş emri atama' },
+
+    { name: 'assets:create', resource: 'assets', action: 'create', description: 'Demirbaş oluşturma' },
+    { name: 'assets:read', resource: 'assets', action: 'read', description: 'Demirbaş görüntüleme' },
+    { name: 'assets:update', resource: 'assets', action: 'update', description: 'Demirbaş güncelleme' },
+    { name: 'assets:delete', resource: 'assets', action: 'delete', description: 'Demirbaş silme' },
+
+    // === PHASE 3: WHATSAPP CHATBOT ===
+    { name: 'whatsapp:read', resource: 'whatsapp', action: 'read', description: 'WhatsApp mesajlarını görüntüleme' },
+    { name: 'whatsapp:send', resource: 'whatsapp', action: 'send', description: 'WhatsApp mesaj gönderme' },
+    { name: 'whatsapp:optin', resource: 'whatsapp', action: 'optin', description: 'KVKK onayı yönetme' },
   ];
 
   console.log('📝 Creating permissions...');
