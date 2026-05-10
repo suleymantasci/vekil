@@ -29,6 +29,7 @@ export class WorkOrdersService {
     return this.prisma.workOrder.create({
       data: {
         reportedBy: userId,
+        organizationId: organizationId,
         title: dto.title,
         description: dto.description,
         assetId: dto.assetId || null,
