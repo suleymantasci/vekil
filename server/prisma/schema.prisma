@@ -230,6 +230,42 @@ model PaymentRequest {
   apartment      Apartment    @relation(fields: [apartmentId], references: [id])
 }
 
+model Visitor {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String
+  apartmentId    String?
+  visitorName    String
+  visitorPhone   String?
+  purpose        String
+  accessCode     String   @unique
+  qrCodeUrl      String?
+  status         String   @default("PENDING") // PENDING, CHECKED_IN, CHECKED_OUT, EXPIRED
+  expectedArrival DateTime
+  validUntil     DateTime
+  checkedInAt    DateTime?
+  checkedOutAt   DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  building       Building     @relation(fields: [buildingId], references: [id])
+  apartment      Apartment?   @relation(fields: [apartmentId], references: [id])
+  accessLogs     AccessLog[]
+}
+
+model AccessLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  visitorId      String
+  action         String   // CHECK_IN, CHECK_OUT
+  timestamp      DateTime
+  createdAt      DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  visitor        Visitor      @relation(fields: [visitorId], references: [id])
+}
+
 model TahakkukRule {
   id             String   @id @default(uuid())
   organizationId String

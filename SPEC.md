@@ -85,9 +85,10 @@
 - [x] Landing page updated with all phases
 
 #### Faz 5-6: Ziyaretçi & Erişim Yönetimi
-- [ ] Visitor model + QR kod üretimi
-- [ ] Access log
-- [ ] Frontend: ziyaretçi yönetimi
+- [x] Visitor model + QR kod üretimi
+- [x] AccessLog model
+- [x] VisitorsModule (davet, check-in/out, erişim logları)
+- [x] Frontend: ziyaretçi yönetimi
 
 #### Faz 5-7: Sayaç Yönetimi (Opsiyonel)
 - [ ] MeterReading model

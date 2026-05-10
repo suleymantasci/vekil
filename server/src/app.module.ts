@@ -48,6 +48,9 @@ import { AccountingModule } from './accounting/accounting.module';
 // Phase 5-4: Online Ödeme Entegrasyonu
 import { PaymentRequestsModule } from './payment-requests/payment-requests.module';
 
+// Phase 5-6: Ziyaretçi & Erişim Yönetimi
+import { VisitorsModule } from './visitors/visitors.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -128,6 +131,9 @@ import { PaymentRequestsModule } from './payment-requests/payment-requests.modul
 
     // Phase 5-4: Online Ödeme Entegrasyonu
     PaymentRequestsModule,
+
+    // Phase 5-6: Ziyaretçi & Erişim Yönetimi
+    VisitorsModule,
   ],
   controllers: [],
   providers: [],
