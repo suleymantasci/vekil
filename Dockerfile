@@ -15,7 +15,6 @@ COPY --from=server-deps /app/server/node_modules ./node_modules
 COPY server/prisma ./prisma
 RUN npx prisma generate
 COPY server/ ./
-RUN npm run build
 
 # Server runtime
 FROM base AS server-run

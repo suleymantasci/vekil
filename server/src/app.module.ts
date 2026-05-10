@@ -92,12 +92,6 @@ import { AnnouncementsModule } from './announcements/announcements.module';
     // Global Prisma Module
     PrismaModule,
 
-    // Common Services & Guards
-    RateLimitService,
-    AuthThrottlerGuard,
-    AuthenticatedThrottlerGuard,
-    JwtAuthGuard,
-
     // Feature Modules
     AuthModule,
     UsersModule,
