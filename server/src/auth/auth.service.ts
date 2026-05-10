@@ -13,20 +13,14 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    // 1. Check if email exists
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
-    if (existingUser) {
-      throw new Error('Bu e-posta adresi zaten kayıtlı');
-    }
-
-    // 2. Check slug uniqueness
-    const existingOrg = await this.prisma.organization.findUnique({
-      where: { slug: dto.organizationSlug },
-    });
-    if (existingOrg) {
-      throw new Error('Bu şirket slugı zaten kullanılıyor');
+    // Check if email or slug already exists
+    const [existingUser, existingOrg] = await Promise.all([
+      this.prisma.user.findUnique({ where: { email: dto.email } }),
+      this.prisma.organization.findUnique({ where: { slug: dto.organizationSlug } }),
+    ]);
+    if (existingUser || existingOrg) {
+      // Use generic message to prevent user enumeration
+      throw new Error('Kayıt işlemi başarısız. Lütfen bilgilerinizi kontrol edin.');
     }
 
     // 3. Create organization + admin user in transaction
@@ -89,19 +83,18 @@ export class AuthService {
     });
 
     if (!user || !user.isActive) {
-      throw new Error('Geçersiz e-posta veya şifre');
+      // Generic message to prevent user enumeration
+      throw new Error('Giriş başarısız. Lütfen e-posta ve şifrenizi kontrol edin.');
     }
 
     const validPassword = await argon2.verify(user.passwordHash, dto.password);
     if (!validPassword) {
-      throw new Error('Geçersiz e-posta veya şifre');
+      // Generic message - same as above to prevent timing attacks
+      throw new Error('Giriş başarısız. Lütfen e-posta ve şifrenizi kontrol edin.');
     }
 
-    // Update last login
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
+    // Generate tokens
+    const tokens = await this.generateTokens(user.id, user.organizationId);
 
     // Audit log
     await this.prisma.auditLog.create({
@@ -110,11 +103,9 @@ export class AuthService {
         organizationId: user.organizationId,
         action: 'LOGIN',
         resource: 'auth',
-        ipAddress: '0.0.0.0', // Will be set via interceptor
+        ipAddress: '0.0.0.0',
       },
     });
-
-    const tokens = await this.generateTokens(user.id, user.organizationId);
 
     return {
       user: this.sanitizeUser(user),

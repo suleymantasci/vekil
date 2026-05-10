@@ -1,4 +1,5 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { AuthThrottlerGuard } from '../common/guards/auth-throttler.guard';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
 import { ApiResponse } from '../common/interfaces/api-response.interface';
@@ -8,6 +9,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
+  @UseGuards(AuthThrottlerGuard)
   async register(@Body() dto: RegisterDto) {
     try {
       const result = await this.authService.register(dto);
@@ -19,6 +21,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthThrottlerGuard)
   async login(@Body() dto: LoginDto) {
     try {
       const result = await this.authService.login(dto);
@@ -30,6 +33,7 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthThrottlerGuard)
   async refresh(@Body() dto: RefreshTokenDto) {
     try {
       const result = await this.authService.refreshToken(dto.refreshToken);

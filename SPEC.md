@@ -3,7 +3,7 @@
 **Proje:** Vekil  
 **Domain:** vekil.tasci.cloud  
 **GitHub:** github.com/suleymantasci/vekil  
-**Durum:** Faz 3 Tamamlandı
+**Durum:** Faz 4 Tamamlandı — Faz 5'e Geçiliyor
 
 ---
 
@@ -28,7 +28,7 @@
 - [x] Ödeme + otomatik dağıtım
 - [x] Client UI: Tahakkuk Rules, Charges, Payments pages
 - [x] 40+ finance permissions
-- [x] Unit tests (24 passing)
+- [x] Unit tests (24 → 46 passing)
 
 ### ✅ Faz 3 — AI Chatbot + Teknik Servis (2026-05-10)
 - [x] WorkOrders module (CRUD, status, priority, assignment)
@@ -38,22 +38,28 @@
 - [x] KVKK consent management for WhatsApp
 - [x] Client UI: Work Orders + Assets pages
 - [x] Phase 3 permissions (workorders, assets, whatsapp)
+- [x] Unit tests (70 → 100+ passing)
 
-### ⏳ Faz 4 — Operasyon ve Sakin Deneyimi
-- [ ] Rezervasyon sistemi (tesis, kort, otopark)
-- [ ] İhale ve satın alma modulü
-- [ ] Ziyaretçi yönetimi (QR kodlu davetiye)
-- [ ] Dijital genel kurul ve oylama
+### ✅ Faz 4 — Operasyon ve Sakin Deneyimi (2026-05-10)
+- [x] Rezervasyon sistemi (tesis, kort, otopark, gym, meeting_room)
+- [x] Conflict detection (double booking prevention)
+- [x] Hourly slot availability (09:00-22:00)
+- [x] İhale ve satın alma modulü (Supplier, PurchaseRequest)
+- [x] Toplantı ve katılım takibi (MeetingAttendance)
+- [x] Dijital oylama sistemi (Vote, VoteParticipant)
+- [x] Client UI: Reservations, Meetings, Purchases pages
+- [x] 98 unit tests passing
 
 ### ⏳ Faz 5 — GEO/SEO ve Rakip Analizi
 - [ ] PostGIS geo-fencing (personel konum doğrulama)
 - [ ] Next.js SSR + JSON-LD structured data
-- [ ] RAKIP ANALİZİ → eksik modüllerin tespiti
+- [ ] RAKİP ANALİZİ → eksik modüllerin tespiti
+- [ ] SEO optimizasyonu
 
 ---
 
 ## Son Commit
-- `c007cf6` - feat(vekil): Phase 3 UI pages
+- `41e0e5a` - feat(vekil): Phase 4 complete
 
 ## Commit History
 - `42c35ff` - Phase 1 foundation
@@ -62,6 +68,9 @@
 - `ec337e3` - Phase 2 unit tests (24 passing)
 - `73932e1` - Phase 3 backend (Work Orders, Assets, WhatsApp)
 - `c007cf6` - Phase 3 UI pages
+- `85efd3c` - Phase 3 tests + WhatsApp keyword fixes (70 tests)
+- `4c1029c` - Phase 4 backend modules
+- `41e0e5a` - Phase 4 UI + tests (98 passing)
 
 ## WhatsApp Chatbot Komutları
 - `/borcum` - Borç durumu sorgulama
@@ -69,14 +78,20 @@
 - `/bildirim` - Arıza bildirimi
 - `/yardim` - Yardım
 
-## API Endpoints (Phase 3)
-- `POST /work-orders` - İş emri oluştur
-- `GET /work-orders` - İş emirleri listesi
-- `PUT /work-orders/:id/assign` - Atama
-- `GET /assets` - Demirbaşlar
-- `GET /assets/:id/warranty` - Garanti durumu
-- `POST /whatsapp/webhook` - WhatsApp mesajları
-- `POST /whatsapp/opt-in` - KVKK onayı
+## Test Coverage
+| Service | Tests |
+|---------|-------|
+| LateFeeService | 7 |
+| TahakkukService | 10 |
+| PaymentsService | 8 |
+| WorkOrdersService | 20 |
+| AssetsService | 11 |
+| WhatsAppService | 14 |
+| ReservationsService | 10 |
+| VotesService | 9 |
+| MeetingsService | 5 |
+| PurchasesService | 9 |
+| **Total** | **98** |
 
 ## Deployment
 - Traefik ile vekil.tasci.cloud

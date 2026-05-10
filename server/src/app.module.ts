@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule, ThrottlerModuleOptions } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
@@ -36,11 +36,15 @@ import { PurchasesModule } from './purchases/purchases.module';
       envFilePath: '.env',
     }),
 
-    // Rate limiting: 100 req/min
+    // Rate limiting: 100 req/min global, auth endpoints override via guards
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        throttlers: [{ ttl: 60000, limit: 100 }],
+      useFactory: (config: ConfigService): ThrottlerModuleOptions => ({
+        throttlers: [
+          { ttl: 60000, limit: 100 }, // Global: 100 req/min
+        ],
+        // Ignore user-based tracking for auth endpoints
+        getTracker: (req) => req.ip || req.socket?.remoteAddress || '127.0.0.1',
       }),
     }),
 

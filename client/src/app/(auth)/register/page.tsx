@@ -221,7 +221,7 @@ export default function RegisterPage() {
               />
               <label htmlFor="kvkk" className="text-sm text-gray-600">
                {' '}
-                <a href="/kvkk" target="_blank" className="text-blue-600 hover:underline">
+                <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                   KVKK Aydınlatma Metni
                 </a>
                 'ni okudum ve kabul ediyorum.
