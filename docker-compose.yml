@@ -28,6 +28,9 @@ services:
       context: .
       dockerfile: Dockerfile
       target: client-run
+      args:
+        - NEXT_PUBLIC_API_URL=https://vekil.tasci.cloud/api/v1
+        - NEXT_PUBLIC_APP_URL=https://vekil.tasci.cloud
     container_name: vekil-client
     restart: unless-stopped
     depends_on:

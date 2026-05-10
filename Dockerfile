@@ -24,6 +24,8 @@ RUN npm ci
 FROM base AS client-builder
 WORKDIR /app/client
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
 COPY --from=client-deps /app/client/node_modules ./node_modules
 COPY client/ ./
 RUN npm run build
