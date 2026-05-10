@@ -14,7 +14,7 @@ export class UsersService {
     const [users, total] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         where: { organizationId },
-        include: { role: true, apartment: { include: { building: true } } },
+        include: { roles: { include: { roles: { include: { role: true } } } }, apartment: { include: { building: true } } },
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -28,7 +28,7 @@ export class UsersService {
   async findOne(id: string, organizationId: string) {
     const user = await this.prisma.user.findFirst({
       where: { id, organizationId },
-      include: { role: true, apartment: { include: { building: true } } },
+      include: { roles: { include: { roles: { include: { role: true } } } }, apartment: { include: { building: true } } },
     });
     if (!user) throw new Error('Kullanıcı bulunamadı');
     return user;
@@ -48,7 +48,7 @@ export class UsersService {
         phone: dto.phone,
         apartmentId: dto.apartmentId,
       },
-      include: { role: true },
+      include: { roles: { include: { role: true } } },
     });
 
     await this.prisma.auditLog.create({
@@ -80,7 +80,7 @@ export class UsersService {
     const updated = await this.prisma.user.update({
       where: { id },
       data: updateData,
-      include: { role: true },
+      include: { roles: { include: { role: true } } },
     });
 
     await this.prisma.auditLog.create({
