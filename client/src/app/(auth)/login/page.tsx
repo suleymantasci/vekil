@@ -17,18 +17,23 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log('[DEBUG] authApi.login called with email:', email);
-      const { data } = await authApi.login(email, password);
-      console.log('[DEBUG] authApi.login returned data:', JSON.stringify(data));
-      console.log('[DEBUG] data.accessToken:', data?.accessToken);
-      console.log('[DEBUG] data.user:', data?.user);
-      console.log('[DEBUG] data.organization:', data?.organization);
+      console.log('[DEBUG] authApi.login called');
+      const response = await authApi.login(email, password);
+      console.log('[DEBUG] authApi.login response:', JSON.stringify(response));
+      console.log('[DEBUG] response.data:', JSON.stringify(response?.data));
+      console.log('[DEBUG] response.data.data:', JSON.stringify(response?.data?.data));
       
-      localStorage.setItem('vekil_access_token', data.accessToken ?? '');
-      localStorage.setItem('vekil_refresh_token', data.refreshToken ?? '');
-      localStorage.setItem('vekil_user', JSON.stringify(data.user ?? null));
-      localStorage.setItem('vekil_org', JSON.stringify(data.organization ?? null));
-      console.log('[DEBUG] localStorage set, navigating to dashboard...');
+      // response = { success, data: { user, organization, accessToken, refreshToken }, error }
+      const loginData = response.data;
+      
+      localStorage.setItem('vekil_access_token', loginData?.data?.accessToken ?? '');
+      localStorage.setItem('vekil_refresh_token', loginData?.data?.refreshToken ?? '');
+      localStorage.setItem('vekil_user', JSON.stringify(loginData?.data?.user ?? null));
+      localStorage.setItem('vekil_org', JSON.stringify(loginData?.data?.organization ?? null));
+      
+      console.log('[DEBUG] Stored accessToken:', loginData?.data?.accessToken ? 'present' : 'missing');
+      console.log('[DEBUG] Stored user:', loginData?.data?.user ? 'present' : 'missing');
+      
       router.push('/dashboard');
     } catch (err: any) {
       console.error('[DEBUG] Login error:', err);
