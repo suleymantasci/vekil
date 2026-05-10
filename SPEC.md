@@ -65,10 +65,10 @@
 - [x] Frontend document list/view
 
 #### Faz 5-3: Muhasebe & Raporlama
-- [ ] IncomeExpense model (gelir-gider kayıtları)
-- [ ] AccountingModule + raporlar
-- [ ] Bütçe planlama (Budget)
-- [ ] Frontend: gelir-gider dashboard
+- [x] IncomeExpense model (gelir-gider kayıtları)
+- [x] AccountingModule + raporlar
+- [x] Bütçe planlama (Budget)
+- [x] Frontend: gelir-gider dashboard
 
 #### Faz 5-4: Online Ödeme Entegrasyonu
 - [ ] PaymentRequest model

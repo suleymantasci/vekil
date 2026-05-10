@@ -176,6 +176,40 @@ model Document {
   building       Building?   @relation(fields: [buildingId], references: [id])
 }
 
+model IncomeExpense {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String?
+  type           String   // INCOME, EXPENSE
+  category       String   // DUES_INCOME, MAINTENANCE_EXPENSE, etc.
+  amount         Float
+  description    String
+  referenceNo    String?
+  transactionDate DateTime
+  createdAt      DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  building       Building?   @relation(fields: [buildingId], references: [id])
+}
+
+model Budget {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String?
+  year           Int
+  month          Int?
+  category       String
+  plannedAmount  Float
+  actualAmount   Float    @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  building       Building?   @relation(fields: [buildingId], references: [id])
+
+  @@unique([organizationId, year, category, buildingId, month])
+}
+
 model TahakkukRule {
   id             String   @id @default(uuid())
   organizationId String

@@ -42,6 +42,9 @@ import { AnnouncementsModule } from './announcements/announcements.module';
 // Phase 5-2: Döküman Yönetimi
 import { DocumentsModule } from './documents/documents.module';
 
+// Phase 5-3: Muhasebe & Raporlama
+import { AccountingModule } from './accounting/accounting.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -116,6 +119,9 @@ import { DocumentsModule } from './documents/documents.module';
 
     // Phase 5-2: Döküman Yönetimi
     DocumentsModule,
+
+    // Phase 5-3: Muhasebe & Raporlama
+    AccountingModule,
   ],
   controllers: [],
   providers: [],
