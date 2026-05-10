@@ -145,7 +145,7 @@ export class ReservationsService {
       slotEnd.setHours(hour + 1, 0, 0, 0);
 
       const isBooked = reservations.some(
-        (r) => r.startTime < slotEnd && r.endTime > slotStart,
+        (r: any) => r.startTime < slotEnd && r.endTime > slotStart,
       );
 
       slots.push({

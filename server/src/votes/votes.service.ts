@@ -79,7 +79,7 @@ export class VotesService {
     const validOptions = vote.options as string[];
     const results: Record<string, number> = {};
     validOptions.forEach((opt) => (results[opt] = 0));
-    participants.forEach((p) => {
+    participants.forEach((p: any) => {
       if (results[p.option] !== undefined) results[p.option] += p.weight;
     });
 
