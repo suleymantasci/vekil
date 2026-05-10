@@ -44,7 +44,7 @@ export default function DocumentsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      let url = `http://localhost:3000/api/documents?organizationId=${org.id}`;
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/documents?organizationId=${org.id}`;
       if (filterCategory) url += `&category=${filterCategory}`;
       
       const res = await fetch(url, {
@@ -107,7 +107,7 @@ export default function DocumentsPage() {
         formDataToSend.append('buildingId', formData.buildingId);
       }
       
-      const res = await fetch('http://localhost:3000/api/documents/upload', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/documents/upload', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formDataToSend,
@@ -137,7 +137,7 @@ export default function DocumentsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/documents/${id}?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/documents/${id}?organizationId=${org.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

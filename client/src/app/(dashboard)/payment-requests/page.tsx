@@ -68,7 +68,7 @@ export default function PaymentRequestsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      let url = `http://localhost:3000/api/payment-requests?organizationId=${org.id}`;
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/payment-requests?organizationId=${org.id}`;
       if (filterStatus) url += `&status=${filterStatus}`;
       
       const res = await fetch(url, {
@@ -91,7 +91,7 @@ export default function PaymentRequestsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/payment-requests/stats/summary?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-requests/stats/summary?organizationId=${org.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -111,7 +111,7 @@ export default function PaymentRequestsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/payment-requests', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/payment-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +142,7 @@ export default function PaymentRequestsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/payment-requests/${id}/cancel?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-requests/${id}/cancel?organizationId=${org.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });

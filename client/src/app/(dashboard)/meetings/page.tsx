@@ -31,7 +31,7 @@ export default function MeetingsPage() {
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       const token = localStorage.getItem('vekil_access_token');
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/meetings?organizationId=${org.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/meetings?organizationId=${org.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();

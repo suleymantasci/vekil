@@ -34,7 +34,7 @@ export default function WorkOrdersPage() {
       if (filter.buildingId) params.append('buildingId', filter.buildingId);
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/work-orders?${params}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/work-orders?${params}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();

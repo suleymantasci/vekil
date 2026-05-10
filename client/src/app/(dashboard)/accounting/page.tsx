@@ -60,7 +60,7 @@ export default function AccountingPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      let url = `http://localhost:3000/api/accounting/transactions?organizationId=${org.id}`;
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/accounting/transactions?organizationId=${org.id}`;
       if (filterType) url += `&type=${filterType}`;
       
       const res = await fetch(url, {
@@ -83,7 +83,7 @@ export default function AccountingPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/accounting/summary?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounting/summary?organizationId=${org.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -103,7 +103,7 @@ export default function AccountingPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/accounting/transactions', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/accounting/transactions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export default function AccountingPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/accounting/transactions/${id}?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/accounting/transactions/${id}?organizationId=${org.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

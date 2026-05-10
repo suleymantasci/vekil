@@ -66,7 +66,7 @@ export default function VisitorsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      let url = `http://localhost:3000/api/visitors?organizationId=${org.id}`;
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/visitors?organizationId=${org.id}`;
       if (filterStatus) url += `&status=${filterStatus}`;
       
       const res = await fetch(url, {
@@ -89,7 +89,7 @@ export default function VisitorsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/visitors/stats/summary?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/visitors/stats/summary?organizationId=${org.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -109,7 +109,7 @@ export default function VisitorsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/visitors', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/visitors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ export default function VisitorsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/visitors/${id}/check-out?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/visitors/${id}/check-out?organizationId=${org.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -168,7 +168,7 @@ export default function VisitorsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/visitors/${id}/cancel?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/visitors/${id}/cancel?organizationId=${org.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });

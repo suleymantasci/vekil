@@ -30,7 +30,7 @@ export default function AssetsPage() {
       if (filter.buildingId) params.append('buildingId', filter.buildingId);
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/assets?${params}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/assets?${params}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();

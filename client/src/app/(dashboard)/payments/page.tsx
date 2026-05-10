@@ -40,7 +40,7 @@ export default function PaymentsPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/payments?organizationId=${org.id}&period=${period}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/payments?organizationId=${org.id}&period=${period}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
@@ -69,7 +69,7 @@ export default function PaymentsPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/payments`,
+        `${process.env.NEXT_PUBLIC_API_URL}/payments`,
         {
           method: 'POST',
           headers: {

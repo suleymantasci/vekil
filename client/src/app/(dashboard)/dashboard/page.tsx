@@ -54,7 +54,7 @@ export default function DashboardPage() {
 
       // Load charges summary
       const chargesRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/charges?organizationId=${orgData.id}&period=${period}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/charges?organizationId=${orgData.id}&period=${period}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const chargesData = await chargesRes.json();

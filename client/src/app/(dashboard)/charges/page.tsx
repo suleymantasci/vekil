@@ -37,7 +37,7 @@ export default function ChargesPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/charges?organizationId=${org.id}&period=${period}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/charges?organizationId=${org.id}&period=${period}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();

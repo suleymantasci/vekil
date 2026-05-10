@@ -42,7 +42,7 @@ export default function AnnouncementsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/announcements?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/announcements?organizationId=${org.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -64,7 +64,7 @@ export default function AnnouncementsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/announcements', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/announcements', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +91,7 @@ export default function AnnouncementsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/announcements/${id}/publish?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/announcements/${id}/publish?organizationId=${org.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -111,7 +111,7 @@ export default function AnnouncementsPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/announcements/${id}?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/announcements/${id}?organizationId=${org.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });

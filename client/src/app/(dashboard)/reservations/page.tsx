@@ -43,7 +43,7 @@ export default function ReservationsPage() {
       if (filter.facility) params.append('facility', filter.facility);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/reservations?${params}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/reservations?${params}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();

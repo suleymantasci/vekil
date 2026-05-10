@@ -36,7 +36,7 @@ export default function TahakkukRulesPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/rules?organizationId=${org.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/rules?organizationId=${org.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
@@ -61,7 +61,7 @@ export default function TahakkukRulesPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/rules?organizationId=${org.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/rules?organizationId=${org.id}`,
         {
           method: 'POST',
           headers: {
@@ -100,7 +100,7 @@ export default function TahakkukRulesPage() {
       const token = localStorage.getItem('vekil_access_token');
       
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/rules/${id}?organizationId=${org.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/rules/${id}?organizationId=${org.id}`,
         {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },
@@ -123,7 +123,7 @@ export default function TahakkukRulesPage() {
       const period = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
       
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1'}/tahakkuk/generate`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tahakkuk/generate`,
         {
           method: 'POST',
           headers: {

@@ -67,7 +67,7 @@ export default function MetersPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      let url = `http://localhost:3000/api/meters?organizationId=${org.id}`;
+      let url = `${process.env.NEXT_PUBLIC_API_URL}/meters?organizationId=${org.id}`;
       if (filterType) url += `&meterType=${filterType}`;
       
       const res = await fetch(url, {
@@ -90,7 +90,7 @@ export default function MetersPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch(`http://localhost:3000/api/meters/${meterId}/readings?organizationId=${org.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/meters/${meterId}/readings?organizationId=${org.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -110,7 +110,7 @@ export default function MetersPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/meters', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/meters', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ export default function MetersPage() {
       const token = localStorage.getItem('vekil_access_token');
       const org = JSON.parse(localStorage.getItem('vekil_org') || '{}');
       
-      const res = await fetch('http://localhost:3000/api/meters/readings', {
+      const res = await fetch('${process.env.NEXT_PUBLIC_API_URL}/meters/readings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
