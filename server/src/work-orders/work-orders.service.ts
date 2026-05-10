@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../auth/prisma.service';
 
 export interface CreateWorkOrderDto {
+  buildingId: string;
   assetId?: string;
   title: string;
   description: string;
@@ -30,6 +31,7 @@ export class WorkOrdersService {
       data: {
         reportedBy: userId,
         organizationId: organizationId,
+        buildingId: dto.buildingId,
         title: dto.title,
         description: dto.description,
         assetId: dto.assetId || null,

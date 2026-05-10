@@ -20,6 +20,7 @@ export class WorkOrdersController {
   async create(
     @Body() body: {
       organizationId: string;
+      buildingId: string;
       title: string;
       description: string;
       assetId?: string;
