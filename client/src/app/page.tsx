@@ -9,8 +9,8 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="px-6 py-20 mx-auto max-w-6xl">
         <div className="text-center space-y-6">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
-            🚀 Faz 1 — Çekirdek Altyapı Tamamlandı
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-medium">
+            ✅ Faz 1-5 Tamamlandı — Tüm Çekirdek Modüller Hazır
           </div>
           <h1 className="text-5xl font-bold text-gray-900 tracking-tight">
             Vekil
@@ -33,16 +33,36 @@ export default async function HomePage() {
       {/* Feature Grid */}
       <section className="px-6 py-16 mx-auto max-w-6xl">
         <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-          Faz 1 — Çekirdek Modüller ✓
+          Tamamlanan Modüller
         </h2>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-4 gap-6">
           {[
-            { icon: '🏢', title: 'Çoklu Kiracı (Multi-Tenant)', desc: 'PostgreSQL RLS ile %100 veri izolasyonu' },
-            { icon: '🔐', title: 'JWT Auth', desc: 'Güvenli kimlik doğrulama ve yetkilendirme' },
-            { icon: '📊', title: 'Bina & Daire Yönetimi', desc: 'Arsa payı, m² ve sabit bazlı yapı' },
-            { icon: '👥', title: 'Kullanıcı & Rol Sistemi', desc: '6 farklı rol, detaylı izin yönetimi' },
-            { icon: '📝', title: 'Audit Logging', desc: 'Tüm değişiklikler IP ve kullanıcı ile loglanır' },
-            { icon: '🔄', title: 'CI/CD Pipeline', desc: 'GitHub Actions → Hostinger deploy' },
+            { icon: '🏢', title: 'Çekirdek', desc: 'Multi-tenant, JWT, RLS, Audit', phase: 'Faz 1' },
+            { icon: '💰', title: 'Finans', desc: 'Aidat, Gecikme Faizi, Ödemeler', phase: 'Faz 2' },
+            { icon: '🤖', title: 'AI Chatbot', desc: 'WhatsApp, WorkOrders, Assets', phase: 'Faz 3' },
+            { icon: '📅', title: 'Operasyon', desc: 'Rezervasyon, Toplantı, Oylama', phase: 'Faz 4' },
+          ].map((f, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+              <span className="text-3xl">{f.icon}</span>
+              <h3 className="mt-4 font-semibold text-gray-900">{f.title}</h3>
+              <p className="mt-2 text-gray-600 text-sm">{f.desc}</p>
+              <span className="inline-block mt-2 px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">{f.phase}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Extra Features - Phase 5 */}
+      <section className="px-6 py-16 mx-auto max-w-6xl">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+          Faz 5 — Ek Özellikler
+        </h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          {[
+            { icon: '🔔', title: 'Bildirimler', desc: 'Anlık bildirimler ve duyurular' },
+            { icon: '📁', title: 'Döküman', desc: 'Fatura, sözleşme, makbuz yönetimi' },
+            { icon: '💹', title: 'Muhasebe', desc: 'Gelir-gider takibi ve raporlama' },
+            { icon: '💳', title: 'Online Ödeme', desc: 'Online ödeme talep ve takibi' },
           ].map((f, i) => (
             <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
               <span className="text-3xl">{f.icon}</span>
@@ -61,10 +81,10 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-5 gap-4">
           {[
             { phase: 'Faz 1', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Çekirdek Altyapı' },
-            { phase: 'Faz 2', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Finans Motoru + WhatsApp' },
-            { phase: 'Faz 3', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'AI Chatbot + Teknik Servis' },
-            { phase: 'Faz 4', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Operasyon ve Sakin Deneyimi' },
-            { phase: 'Faz 5', status: 'Sırada', color: 'bg-blue-100 text-blue-700', desc: 'GEO/SEO Optimizasyonu' },
+            { phase: 'Faz 2', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Finans Motoru' },
+            { phase: 'Faz 3', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'AI Chatbot + Servis' },
+            { phase: 'Faz 4', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Operasyon' },
+            { phase: 'Faz 5', status: 'Devam Ediyor', color: 'bg-blue-100 text-blue-700', desc: 'SEO + Rakip Analizi' },
           ].map((p, i) => (
             <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 text-center">
               <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 ${p.color}`}>
@@ -83,7 +103,7 @@ export default async function HomePage() {
           Teknoloji Yığını
         </h2>
         <div className="flex flex-wrap justify-center gap-3">
-          {['NestJS', 'Prisma', 'PostgreSQL', 'Next.js 15', 'Tailwind CSS', 'shadcn/ui', 'Redis/BullMQ', 'WhatsApp API', 'OpenAI'].map((tech) => (
+          {['NestJS', 'Prisma', 'PostgreSQL', 'Next.js 15', 'Tailwind CSS', 'TypeScript', 'WhatsApp API', 'JWT', 'RLS'].map((tech) => (
             <span key={tech} className="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700">
               {tech}
             </span>

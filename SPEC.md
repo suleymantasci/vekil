@@ -77,10 +77,12 @@
 - [x] Status tracking and cancellation
 
 #### Faz 5-5: SEO & Performance
-- [ ] JSON-LD structured data (Organization, LocalBusiness)
-- [ ] Next.js SSR optimization
-- [ ] Meta tags + Open Graph
-- [ ] Sitemap + robots.txt
+- [x] JSON-LD structured data (SoftwareApplication, LocalBusiness)
+- [x] Next.js metadata API with OpenGraph + Twitter cards
+- [x] Security headers (CSP, HSTS, X-Frame-Options)
+- [x] Sitemap generation (/sitemap.xml)
+- [x] Robots.txt configuration
+- [x] Landing page updated with all phases
 
 #### Faz 5-6: Ziyaretçi & Erişim Yönetimi
 - [ ] Visitor model + QR kod üretimi
