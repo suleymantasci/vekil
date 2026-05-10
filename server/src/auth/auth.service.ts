@@ -77,7 +77,6 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    console.log('[DEBUG] login called, prisma:', typeof this.prisma, 'auditLog:', typeof this.prisma?.auditLog);
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: { roles: { include: { role: true } }, organization: true },
@@ -98,13 +97,6 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.organizationId);
 
     // Audit log - wrapped in try/catch to prevent auth failures
-    try {
-      const p: any = this.prisma;
-      await p.auditLog.create({
-        data: { userId: user.id, organizationId: user.organizationId, action: 'LOGIN', resource: 'auth', ipAddress: '0.0.0.0' },
-      });
-    } catch (err) {
-      console.error('AuditLog error (non-fatal):', err.message);
     }
 
     return {
