@@ -51,10 +51,50 @@
 - [x] 98 unit tests passing
 
 ### ⏳ Faz 5 — GEO/SEO ve Rakip Analizi
-- [ ] PostGIS geo-fencing (personel konum doğrulama)
-- [ ] Next.js SSR + JSON-LD structured data
-- [ ] RAKİP ANALİZİ → eksik modüllerin tespiti
-- [ ] SEO optimizasyonu
+
+#### Faz 5-1: Bildirim & Duyuru Sistemi
+- [ ] NotificationsModule (backend) - model zaten var
+- [ ] AnnouncementsModule (backend) - model zaten var
+- [ ] Frontend: notification bell + announcement list
+- [ ] Bildirim gönderme API (email/push placeholder)
+
+#### Faz 5-2: Döküman Yönetimi
+- [ ] Document model (döküman meta + file storage)
+- [ ] DocumentModule (upload, list, download)
+- [ ] Local file storage (veya S3 placeholder)
+- [ ] Frontend document list/view
+
+#### Faz 5-3: Muhasebe & Raporlama
+- [ ] IncomeExpense model (gelir-gider kayıtları)
+- [ ] AccountingModule + raporlar
+- [ ] Bütçe planlama (Budget)
+- [ ] Frontend: gelir-gider dashboard
+
+#### Faz 5-4: Online Ödeme Entegrasyonu
+- [ ] PaymentRequest model
+- [ ] Iyzico/PayStack entegrasyonu (placeholder)
+- [ ] Frontend: online ödeme akışı
+
+#### Faz 5-5: SEO & Performance
+- [ ] JSON-LD structured data (Organization, LocalBusiness)
+- [ ] Next.js SSR optimization
+- [ ] Meta tags + Open Graph
+- [ ] Sitemap + robots.txt
+
+#### Faz 5-6: Ziyaretçi & Erişim Yönetimi
+- [ ] Visitor model + QR kod üretimi
+- [ ] Access log
+- [ ] Frontend: ziyaretçi yönetimi
+
+#### Faz 5-7: Sayaç Yönetimi (Opsiyonel)
+- [ ] MeterReading model
+- [ ] Kalorimetre/su sayacı takibi
+- [ ] Frontend meter reading
+
+#### Faz 5-8: PWA Mobil Desteği
+- [ ] Service worker + manifest
+- [ ] Offline support (basis)
+- [ ] Push notifications (web push)
 
 ---
 

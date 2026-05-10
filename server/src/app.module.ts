@@ -35,6 +35,10 @@ import { MeetingsModule } from './meetings/meetings.module';
 import { VotesModule } from './votes/votes.module';
 import { PurchasesModule } from './purchases/purchases.module';
 
+// Phase 5-1: Bildirim & Duyuru Sistemi
+import { NotificationsModule } from './notifications/notifications.module';
+import { AnnouncementsModule } from './announcements/announcements.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -102,6 +106,10 @@ import { PurchasesModule } from './purchases/purchases.module';
     MeetingsModule,
     VotesModule,
     PurchasesModule,
+
+    // Phase 5-1: Bildirim & Duyuru Sistemi
+    NotificationsModule,
+    AnnouncementsModule,
   ],
   controllers: [],
   providers: [],

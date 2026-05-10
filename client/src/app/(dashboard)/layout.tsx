@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import NotificationBell from '@/components/notification-bell';
 
 interface User {
   id: string;
@@ -63,6 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { href: '/work-orders', label: 'İş Emirleri', icon: '🔧' },
     { href: '/reservations', label: 'Rezervasyonlar', icon: '📅' },
     { href: '/meetings', label: 'Toplantılar', icon: '🏛️' },
+    { href: '/announcements', label: 'Duyurular', icon: '📢' },
     { href: '/purchases', label: 'Satın Alma', icon: '🛒' },
     { href: '/settings/tahakkuk-rules', label: 'Aidat Kuralları', icon: '📋' },
     { href: '/users', label: 'Kullanıcılar', icon: '👥' },
@@ -132,6 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {org.name}
           </h1>
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <span className="text-sm text-gray-500">
               {user.roleName === 'ORGANIZATION_ADMIN' ? 'Yönetici' : user.roleName}
             </span>

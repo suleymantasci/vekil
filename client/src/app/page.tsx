@@ -61,10 +61,10 @@ export default async function HomePage() {
         <div className="grid md:grid-cols-5 gap-4">
           {[
             { phase: 'Faz 1', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Çekirdek Altyapı' },
-            { phase: 'Faz 2', status: 'Sırada', color: 'bg-blue-100 text-blue-700', desc: 'Finans Motoru + WhatsApp' },
-            { phase: 'Faz 3', status: 'Sırada', color: 'bg-gray-100 text-gray-500', desc: 'AI Chatbot + Teknik Servis' },
-            { phase: 'Faz 4', status: 'Sırada', color: 'bg-gray-100 text-gray-500', desc: 'Operasyon ve Sakin Deneyimi' },
-            { phase: 'Faz 5', status: 'Sırada', color: 'bg-gray-100 text-gray-500', desc: 'GEO/SEO Optimizasyonu' },
+            { phase: 'Faz 2', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Finans Motoru + WhatsApp' },
+            { phase: 'Faz 3', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'AI Chatbot + Teknik Servis' },
+            { phase: 'Faz 4', status: 'Tamamlandı ✓', color: 'bg-green-100 text-green-700', desc: 'Operasyon ve Sakin Deneyimi' },
+            { phase: 'Faz 5', status: 'Sırada', color: 'bg-blue-100 text-blue-700', desc: 'GEO/SEO Optimizasyonu' },
           ].map((p, i) => (
             <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 text-center">
               <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium mb-2 ${p.color}`}>
