@@ -27,7 +27,7 @@ export class PaymentsService {
     const { organizationId, apartmentId, userId, chargeId, amount, paymentMethod, reference } = params;
 
     // Transaction ile hem ödemeyi hem de charge'ı güncelle
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: any) => {
       // Ödeme oluştur
       const payment = await tx.payment.create({
         data: {
@@ -182,8 +182,8 @@ export class PaymentsService {
     };
 
     for (const charge of charges) {
-      const paid = charge.payments.reduce((s, p) => s + p.amount, 0);
-      const lateFee = charge.lateFees.reduce((s, f) => s + f.amount, 0);
+      const paid = charge.payments.reduce((s: number, p: any) => s + p.amount, 0);
+      const lateFee = charge.lateFees.reduce((s: number, f: any) => s + f.amount, 0);
 
       summary.totalAmount += charge.amount;
       summary.totalPaid += paid;

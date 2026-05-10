@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../auth/prisma.service';
-import { Prisma } from '@prisma/client';
 
 export interface TahakkukRuleDto {
   buildingId?: string;
@@ -110,7 +109,7 @@ export class TahakkukService {
       include: { building: true, users: true },
     });
 
-    const createdCharges: Prisma.ChargeCreateWithoutOrganizationInput[] = [];
+    const createdCharges: any[] = [];
 
     for (const apartment of apartments) {
       for (const rule of rules) {
@@ -201,13 +200,13 @@ export class TahakkukService {
       include: { lateFees: true, payments: true },
     });
 
-    const totalDebt = charges.reduce((sum, c) => sum + c.amount, 0);
-    const totalPaid = charges.reduce((sum, c) => {
-      const paid = c.payments.reduce((s, p) => s + p.amount, 0);
+    const totalDebt = charges.reduce((sum: number, c: any) => sum + c.amount, 0);
+    const totalPaid = charges.reduce((sum: number, c: any) => {
+      const paid = c.payments.reduce((s: number, p: any) => s + p.amount, 0);
       return sum + paid;
     }, 0);
     const totalLateFee = charges.reduce(
-      (sum, c) => sum + c.lateFees.filter((f) => !f.isPaid).reduce((s, f) => s + f.amount, 0),
+      (sum: number, c: any) => sum + c.lateFees.filter((f: any) => !f.isPaid).reduce((s: number, f: any) => s + f.amount, 0),
       0
     );
 
@@ -217,14 +216,14 @@ export class TahakkukService {
       totalPaid,
       balance: totalDebt - totalPaid, // Kalan borç
       totalLateFee,
-      charges: charges.map((c) => ({
+      charges: charges.map((c: any) => ({
         id: c.id,
         description: c.description,
         amount: c.amount,
         status: c.status,
         dueDate: c.dueDate,
-        paidAmount: c.payments.reduce((s, p) => s + p.amount, 0),
-        lateFee: c.lateFees.filter((f) => !f.isPaid).reduce((s, f) => s + f.amount, 0),
+        paidAmount: c.payments.reduce((s: number, p: any) => s + p.amount, 0),
+        lateFee: c.lateFees.filter((f: any) => !f.isPaid).reduce((s: number, f: any) => s + f.amount, 0),
       })),
     };
   }

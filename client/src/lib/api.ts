@@ -100,3 +100,42 @@ export const usersApi = {
   delete: (id: string) =>
     api.delete(`/users/${id}`),
 };
+
+// Tahakkuk (Charge) API
+export const tahakkukApi = {
+  // Rules
+  getRules: (organizationId: string, buildingId?: string) =>
+    api.get(`/tahakkuk/rules?organizationId=${organizationId}${buildingId ? `&buildingId=${buildingId}` : ''}`),
+  createRule: (organizationId: string, data: any) =>
+    api.post(`/tahakkuk/rules?organizationId=${organizationId}`, data),
+  updateRule: (organizationId: string, ruleId: string, data: any) =>
+    api.put(`/tahakkuk/rules/${ruleId}?organizationId=${organizationId}`, data),
+  deleteRule: (organizationId: string, ruleId: string) =>
+    api.delete(`/tahakkuk/rules/${ruleId}?organizationId=${organizationId}`),
+
+  // Charges
+  generateCharges: (data: { organizationId: string; buildingId?: string; period: string; rules: any[] }) =>
+    api.post('/tahakkuk/generate', data),
+  getCharges: (organizationId: string, period: string, buildingId?: string) =>
+    api.get(`/tahakkuk/charges?organizationId=${organizationId}&period=${period}${buildingId ? `&buildingId=${buildingId}` : ''}`),
+  getApartmentBalance: (apartmentId: string) =>
+    api.get(`/tahakkuk/apartment/${apartmentId}/balance`),
+
+  // Late Fees
+  calculateLateFees: (organizationId: string, period?: string) =>
+    api.post('/tahakkuk/calculate-late-fees', { organizationId, period }),
+  getLateFees: (organizationId: string, period?: string) =>
+    api.get(`/tahakkuk/late-fees?organizationId=${organizationId}${period ? `&period=${period}` : ''}`),
+};
+
+// Payments API
+export const paymentsApi = {
+  list: (organizationId: string, period?: string, page = 1, limit = 50) =>
+    api.get(`/payments?organizationId=${organizationId}${period ? `&period=${period}` : ''}&page=${page}&limit=${limit}`),
+  getByApartment: (apartmentId: string, page = 1, limit = 20) =>
+    api.get(`/payments/apartment/${apartmentId}?page=${page}&limit=${limit}`),
+  create: (data: { organizationId: string; apartmentId: string; userId?: string; chargeId?: string; amount: number; paymentMethod?: string; reference?: string }) =>
+    api.post('/payments', data),
+  getSummary: (organizationId: string, period: string) =>
+    api.get(`/payments/summary?organizationId=${organizationId}&period=${period}`),
+};

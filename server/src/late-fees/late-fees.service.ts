@@ -67,15 +67,15 @@ export class LateFeeService {
       if (daysLate <= 0) continue;
 
       // Kalan borç
-      const paidAmount = charge.payments?.reduce((s, p) => s + p.amount, 0) || 0;
+      const paidAmount = (charge.payments as any[])?.reduce((s: number, p: any) => s + p.amount, 0) || 0;
       const remainingDebt = charge.amount - paidAmount;
 
       if (remainingDebt <= 0) continue;
 
       // Mevcut ödenmemiş faizi hesapla
-      const existingLateFee = charge.lateFees
-        .filter((f) => !f.isPaid)
-        .reduce((s, f) => s + f.amount, 0);
+      const existingLateFee = (charge.lateFees as any[])
+        .filter((f: any) => !f.isPaid)
+        .reduce((s: number, f: any) => s + f.amount, 0);
 
       // Yeni faiz hesapla (sadece yeni günler için)
       const newLateFeeAmount = this.calculate(remainingDebt, daysLate);
@@ -132,12 +132,12 @@ export class LateFeeService {
       },
     });
 
-    return charges.map((c) => {
-      const paidAmount = c.payments.reduce((s, p) => s + p.amount, 0);
+    return charges.map((c: any) => {
+      const paidAmount = c.payments.reduce((s: number, p: any) => s + p.amount, 0);
       const remainingDebt = c.amount - paidAmount;
       const unpaidLateFee = c.lateFees
-        .filter((f) => !f.isPaid)
-        .reduce((s, f) => s + f.amount, 0);
+        .filter((f: any) => !f.isPaid)
+        .reduce((s: number, f: any) => s + f.amount, 0);
 
       return {
         chargeId: c.id,
