@@ -17,13 +17,21 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      console.log('[DEBUG] authApi.login called with email:', email);
       const { data } = await authApi.login(email, password);
+      console.log('[DEBUG] authApi.login returned data:', JSON.stringify(data));
+      console.log('[DEBUG] data.accessToken:', data?.accessToken);
+      console.log('[DEBUG] data.user:', data?.user);
+      console.log('[DEBUG] data.organization:', data?.organization);
+      
       localStorage.setItem('vekil_access_token', data.accessToken ?? '');
       localStorage.setItem('vekil_refresh_token', data.refreshToken ?? '');
       localStorage.setItem('vekil_user', JSON.stringify(data.user ?? null));
       localStorage.setItem('vekil_org', JSON.stringify(data.organization ?? null));
+      console.log('[DEBUG] localStorage set, navigating to dashboard...');
       router.push('/dashboard');
     } catch (err: any) {
+      console.error('[DEBUG] Login error:', err);
       setError(err.response?.data?.message || 'Giriş başarısız');
     } finally {
       setLoading(false);
