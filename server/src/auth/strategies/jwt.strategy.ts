@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       include: {
-        role: { include: { permissions: { include: { permission: true } } } },
+        roles: { include: { role: true } },
         organization: true,
       },
     });
@@ -33,8 +33,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Kullanıcı bulunamadı veya pasif');
     }
 
-    // Extract permission names
-    const permissions = user.role?.permissions?.map((rp: { permission: { name: string } }) => rp.permission.name) || [];
+    // Extract permission names from roles
+    const permissions = user.roles?.[0]?.role?.permissions?.map((rp: { permission: { name: string } }) => rp.permission.name) || [];
 
     return {
       id: user.id,
@@ -42,8 +42,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       firstName: user.firstName,
       lastName: user.lastName,
       organizationId: user.organizationId,
-      roleId: user.roleId,
-      roleName: user.role?.name,
+      roleId: user.roles?.[0]?.roleId,
+      roleName: user.roles?.[0]?.role?.name,
       permissions,
     };
   }
