@@ -71,9 +71,10 @@
 - [x] Frontend: gelir-gider dashboard
 
 #### Faz 5-4: Online Ödeme Entegrasyonu
-- [ ] PaymentRequest model
-- [ ] Iyzico/PayStack entegrasyonu (placeholder)
-- [ ] Frontend: online ödeme akışı
+- [x] PaymentRequest model
+- [x] PaymentRequestsModule (stub for Iyzico/PayStack)
+- [x] Frontend: payment request list and creation
+- [x] Status tracking and cancellation
 
 #### Faz 5-5: SEO & Performance
 - [ ] JSON-LD structured data (Organization, LocalBusiness)

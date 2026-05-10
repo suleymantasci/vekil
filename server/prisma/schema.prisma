@@ -210,6 +210,26 @@ model Budget {
   @@unique([organizationId, year, category, buildingId, month])
 }
 
+model PaymentRequest {
+  id             String   @id @default(uuid())
+  organizationId String
+  apartmentId    String
+  amount         Float
+  currency       String   @default("TRY")
+  description    String?
+  status         String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED, REFUNDED
+  paymentRef     String   @unique
+  paymentUrl     String?
+  providerRef    String?
+  paidAt         DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  apartment      Apartment    @relation(fields: [apartmentId], references: [id])
+}
+
 model TahakkukRule {
   id             String   @id @default(uuid())
   organizationId String

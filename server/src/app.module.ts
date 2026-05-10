@@ -45,6 +45,9 @@ import { DocumentsModule } from './documents/documents.module';
 // Phase 5-3: Muhasebe & Raporlama
 import { AccountingModule } from './accounting/accounting.module';
 
+// Phase 5-4: Online Ödeme Entegrasyonu
+import { PaymentRequestsModule } from './payment-requests/payment-requests.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -122,6 +125,9 @@ import { AccountingModule } from './accounting/accounting.module';
 
     // Phase 5-3: Muhasebe & Raporlama
     AccountingModule,
+
+    // Phase 5-4: Online Ödeme Entegrasyonu
+    PaymentRequestsModule,
   ],
   controllers: [],
   providers: [],
