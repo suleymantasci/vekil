@@ -44,14 +44,8 @@ export const metadata: Metadata = {
   description: 'AI destekli apartman ve site yönetimi SaaS platformu. WhatsApp ile borç sorgulama, otomatik aidat, teknik servis ve rezervasyon yönetimi.',
   keywords: ['apartman yönetimi', 'site yönetimi', 'aidat yönetimi', 'condominium yönetim', 'Turkish property management', 'apartman yönetim programı'],
   authors: [{ name: 'Vekil' }],
-  creator: {
-    name: 'Vekil',
-    url: 'https://vekil.tasci.cloud',
-  },
-  publisher: {
-    name: 'Vekil',
-    url: 'https://vekil.tasci.cloud',
-  },
+  creator: 'Vekil',
+  publisher: 'Vekil',
   manifest: '/manifest.json', // PWA manifest
   openGraph: {
     type: 'website',

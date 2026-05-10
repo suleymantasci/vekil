@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     setUser(JSON.parse(storedUser));
-    setOrg(JSON.parse(storedOrg));
+    storedOrg && setOrg(JSON.parse(storedOrg));
   }, [router]);
 
   const handleLogout = () => {

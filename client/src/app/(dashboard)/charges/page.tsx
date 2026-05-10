@@ -18,6 +18,7 @@ interface Charge {
   };
   user?: { firstName: string; lastName: string };
   lateFees: Array<{ amount: number; isPaid: boolean }>;
+  payments?: Array<{ amount: number }>;
 }
 
 export default function ChargesPage() {
