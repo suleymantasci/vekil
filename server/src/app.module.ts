@@ -40,19 +40,19 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { AnnouncementsModule } from './announcements/announcements.module';
 
 // Phase 5-2: Döküman Yönetimi
-import { DocumentsModule } from './documents/documents.module';
+// import { DocumentsModule } from './documents/documents.module'; // Phase 5
 
 // Phase 5-3: Muhasebe & Raporlama
-import { AccountingModule } from './accounting/accounting.module';
+// import { AccountingModule } from './accounting/accounting.module'; // Phase 5
 
 // Phase 5-4: Online Ödeme Entegrasyonu
-import { PaymentRequestsModule } from './payment-requests/payment-requests.module';
+// import { PaymentRequestsModule } from './payment-requests/payment-requests.module'; // Phase 5
 
 // Phase 5-6: Ziyaretçi & Erişim Yönetimi
-import { VisitorsModule } from './visitors/visitors.module';
+// import { VisitorsModule } from './visitors/visitors.module'; // Phase 5
 
 // Phase 5-7: Sayaç Yönetimi
-import { MetersModule } from './meters/meters.module';
+// import { MetersModule } from './meters/meters.module'; // Phase 5
 
 @Module({
   imports: [
@@ -127,19 +127,19 @@ import { MetersModule } from './meters/meters.module';
     AnnouncementsModule,
 
     // Phase 5-2: Döküman Yönetimi
-    DocumentsModule,
+    // DocumentsModule, // Phase 5 - commented out
 
     // Phase 5-3: Muhasebe & Raporlama
-    AccountingModule,
+    // AccountingModule, // Phase 5 - commented out
 
     // Phase 5-4: Online Ödeme Entegrasyonu
-    PaymentRequestsModule,
+    // PaymentRequestsModule, // Phase 5 - commented out
 
     // Phase 5-6: Ziyaretçi & Erişim Yönetimi
-    VisitorsModule,
+    // VisitorsModule, // Phase 5 - commented out
 
     // Phase 5-7: Sayaç Yönetimi
-    MetersModule,
+    // MetersModule, // Phase 5 - commented out
   ],
   controllers: [],
   providers: [],
