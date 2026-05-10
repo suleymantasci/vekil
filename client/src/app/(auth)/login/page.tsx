@@ -17,13 +17,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log('[DEBUG] authApi.login called');
       const response = await authApi.login(email, password);
-      console.log('[DEBUG] authApi.login response:', JSON.stringify(response));
-      console.log('[DEBUG] response.data:', JSON.stringify(response?.data));
-      console.log('[DEBUG] response.data.data:', JSON.stringify(response?.data?.data));
-      
-      // response = { success, data: { user, organization, accessToken, refreshToken }, error }
+      // response.data = { success, data: { user, organization, accessToken, refreshToken }, error }
       const loginData = response.data;
       
       localStorage.setItem('vekil_access_token', loginData?.data?.accessToken ?? '');
@@ -31,12 +26,8 @@ export default function LoginPage() {
       localStorage.setItem('vekil_user', JSON.stringify(loginData?.data?.user ?? null));
       localStorage.setItem('vekil_org', JSON.stringify(loginData?.data?.organization ?? null));
       
-      console.log('[DEBUG] Stored accessToken:', loginData?.data?.accessToken ? 'present' : 'missing');
-      console.log('[DEBUG] Stored user:', loginData?.data?.user ? 'present' : 'missing');
-      
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('[DEBUG] Login error:', err);
       setError(err.response?.data?.message || 'Giriş başarısız');
     } finally {
       setLoading(false);
