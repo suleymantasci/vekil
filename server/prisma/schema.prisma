@@ -266,6 +266,39 @@ model AccessLog {
   visitor        Visitor      @relation(fields: [visitorId], references: [id])
 }
 
+model Meter {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String
+  apartmentId    String?
+  meterNumber    String
+  meterType      String   // ELECTRICITY, WATER, GAS, HEATING
+  location       String?
+  status         String   @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE
+  lastReading   Float    @default(0)
+  lastReadingDate DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  building       Building     @relation(fields: [buildingId], references: [id])
+  apartment      Apartment?   @relation(fields: [apartmentId], references: [id])
+  readings       MeterReading[]
+}
+
+model MeterReading {
+  id              String   @id @default(uuid())
+  meterId         String
+  reading         Float
+  readingDate     DateTime
+  previousReading Float?
+  consumption     Float?
+  readBy          String?
+  createdAt       DateTime @default(now())
+
+  meter           Meter     @relation(fields: [meterId], references: [id])
+}
+
 model TahakkukRule {
   id             String   @id @default(uuid())
   organizationId String

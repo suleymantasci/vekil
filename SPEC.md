@@ -91,9 +91,9 @@
 - [x] Frontend: ziyaretçi yönetimi
 
 #### Faz 5-7: Sayaç Yönetimi (Opsiyonel)
-- [ ] MeterReading model
-- [ ] Kalorimetre/su sayacı takibi
-- [ ] Frontend meter reading
+- [x] Meter model + MeterReading
+- [x] MetersModule (okuma takibi, tüketim raporu)
+- [x] Frontend: sayaç listesi + okuma ekleme modal
 
 #### Faz 5-8: PWA Mobil Desteği
 - [ ] Service worker + manifest

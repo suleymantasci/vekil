@@ -51,6 +51,9 @@ import { PaymentRequestsModule } from './payment-requests/payment-requests.modul
 // Phase 5-6: Ziyaretçi & Erişim Yönetimi
 import { VisitorsModule } from './visitors/visitors.module';
 
+// Phase 5-7: Sayaç Yönetimi
+import { MetersModule } from './meters/meters.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -134,6 +137,9 @@ import { VisitorsModule } from './visitors/visitors.module';
 
     // Phase 5-6: Ziyaretçi & Erişim Yönetimi
     VisitorsModule,
+
+    // Phase 5-7: Sayaç Yönetimi
+    MetersModule,
   ],
   controllers: [],
   providers: [],
