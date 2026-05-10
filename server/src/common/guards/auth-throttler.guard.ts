@@ -20,6 +20,10 @@ export class AuthThrottlerGuard extends ThrottlerGuard {
   private readonly REFRESH_LIMIT = 20;
   private readonly AUTH_GLOBAL_LIMIT = 60;
 
+  // In-memory storage for rate limiting
+  private storage = new Map<string, { count: number; resetTime: number }>();
+  private readonly WINDOW_MS = 60000;
+
   protected async throwThrottlingException(context: ExecutionContext): Promise<void> {
     throw new HttpException(
       'Çok fazla istek. Lütfen biraz bekleyin.',
@@ -32,12 +36,34 @@ export class AuthThrottlerGuard extends ThrottlerGuard {
     return req.ip || req.socket?.remoteAddress || '127.0.0.1';
   }
 
-  protected async checkImpl(context: ExecutionContext, ttl: number, limit: number): Promise<number> {
+  protected async shouldThrow(context: ExecutionContext): Promise<boolean> {
     // Skip rate limiting for bots/crawlers
     if (this.isBotRequest(context)) {
-      return limit; // Return full limit (effectively no throttling)
+      return false;
     }
-    return super.check(null as any, context, ttl, limit);
+
+    const request = context.switchToHttp().getRequest();
+    const tracker = await this.getTracker(request);
+    const route = request.route?.path || request.url || '';
+    const limit = this.getLimitForRoute(route);
+
+    const now = Date.now();
+    let record = this.storage.get(tracker);
+
+    if (!record || now > record.resetTime) {
+      record = { count: 0, resetTime: now + this.WINDOW_MS };
+      this.storage.set(tracker, record);
+    }
+
+    record.count++;
+
+    // Set rate limit headers
+    const response = context.switchToHttp().getResponse();
+    response.setHeader('X-RateLimit-Limit', limit);
+    response.setHeader('X-RateLimit-Remaining', Math.max(0, limit - record.count));
+    response.setHeader('X-RateLimit-Reset', Math.ceil(record.resetTime / 1000));
+
+    return record.count > limit;
   }
 
   protected getRouteFromContext(context: ExecutionContext): string {
@@ -78,5 +104,10 @@ export class AuthThrottlerGuard extends ThrottlerGuard {
     ];
 
     return botPatterns.some(bot => userAgent.toLowerCase().includes(bot.toLowerCase()));
+  }
+
+  // Cleanup for monitoring
+  getStorageSize(): number {
+    return this.storage.size;
   }
 }

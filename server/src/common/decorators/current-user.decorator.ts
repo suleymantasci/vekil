@@ -8,3 +8,14 @@ export const CurrentUser = createParamDecorator(
     return data ? user?.[data] : user;
   },
 );
+
+// Alias for GetCurrentUser (used in some controllers)
+export const GetCurrentUser = CurrentUser;
+
+// Alias for getting just the user ID
+export const GetCurrentUserId = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    return request.user?.id;
+  },
+);

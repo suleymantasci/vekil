@@ -1,5 +1,4 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import { ExecutionContext } from '@nestjs/common';
 
 /**
@@ -13,41 +12,30 @@ import { ExecutionContext } from '@nestjs/common';
  * Also handles bot detection for crawlers.
  */
 @Injectable()
-export class AuthenticatedThrottlerGuard extends ThrottlerGuard {
+export class AuthenticatedThrottlerGuard {
   private readonly AUTHENTICATED_LIMIT = 500; // 500 req/min per user
   private readonly WINDOW_MS = 60000; // 1 minute
 
   private storage = new Map<string, { count: number; resetTime: number }>();
 
-  protected async throwThrottlingException(context: ExecutionContext): Promise<void> {
-    throw new HttpException(
-      'Çok fazla istek. Lütfen daha sonra tekrar deneyin.',
-      HttpStatus.TOO_MANY_REQUESTS,
-    );
-  }
-
-  protected async getTracker(req: any): Promise<string> {
-    // Use user ID if authenticated, otherwise fallback to IP
-    if (req.user?.id) {
-      return `user:${req.user.id}`;
-    }
-    // Fallback to IP for unauthenticated requests
-    return `ip:${req.ip || req.socket?.remoteAddress || '127.0.0.1'}`;
-  }
-
-  protected async check(name: string, context: ExecutionContext, ttl: number, limit: number): Promise<number> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     // Skip rate limiting for bots
     if (this.isBotRequest(context)) {
-      return limit;
+      return true;
     }
-    return super.check(name, context, ttl, limit);
-  }
 
-  protected async shouldThrow(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const tracker = await this.getTracker(request);
-    const now = Date.now();
+    const response = context.switchToHttp().getResponse();
 
+    // Use user ID if authenticated, otherwise fallback to IP
+    let tracker: string;
+    if (request.user?.id) {
+      tracker = `user:${request.user.id}`;
+    } else {
+      tracker = `ip:${request.ip || request.socket?.remoteAddress || '127.0.0.1'}`;
+    }
+
+    const now = Date.now();
     let record = this.storage.get(tracker);
 
     if (!record || now > record.resetTime) {
@@ -58,16 +46,18 @@ export class AuthenticatedThrottlerGuard extends ThrottlerGuard {
     record.count++;
 
     // Set rate limit headers
-    const response = context.switchToHttp().getResponse();
     response.setHeader('X-RateLimit-Limit', this.AUTHENTICATED_LIMIT);
     response.setHeader('X-RateLimit-Remaining', Math.max(0, this.AUTHENTICATED_LIMIT - record.count));
     response.setHeader('X-RateLimit-Reset', Math.ceil(record.resetTime / 1000));
 
     if (record.count > this.AUTHENTICATED_LIMIT) {
-      await this.throwThrottlingException(context);
+      throw new HttpException(
+        'Çok fazla istek. Lütfen daha sonra tekrar deneyin.',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
-    return record.count <= this.AUTHENTICATED_LIMIT;
+    return true;
   }
 
   private isBotRequest(context: ExecutionContext): boolean {
@@ -91,11 +81,15 @@ export class AuthenticatedThrottlerGuard extends ThrottlerGuard {
    */
   cleanup(): void {
     const now = Date.now();
-    for (const [key, record] of this.storage.entries()) {
+    const keysToDelete: string[] = [];
+    
+    this.storage.forEach((record, key) => {
       if (now > record.resetTime) {
-        this.storage.delete(key);
+        keysToDelete.push(key);
       }
-    }
+    });
+
+    keysToDelete.forEach(key => this.storage.delete(key));
   }
 
   /**
@@ -104,7 +98,7 @@ export class AuthenticatedThrottlerGuard extends ThrottlerGuard {
   getStats(): { activeTrackers: number; cleanupRequired: boolean } {
     return {
       activeTrackers: this.storage.size,
-      cleanupRequired: this.storage.size > 100000, // Cleanup if > 100k entries
+      cleanupRequired: this.storage.size > 100000,
     };
   }
 }

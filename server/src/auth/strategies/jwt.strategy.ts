@@ -34,7 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     // Extract permission names
-    const permissions = user.role?.permissions?.map((rp) => rp.permission.name) || [];
+    const permissions = user.role?.permissions?.map((rp: { permission: { name: string } }) => rp.permission.name) || [];
 
     return {
       id: user.id,

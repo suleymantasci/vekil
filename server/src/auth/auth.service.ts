@@ -26,7 +26,7 @@ export class AuthService {
     // 3. Create organization + admin user in transaction
     const passwordHash = await argon2.hash(dto.password);
 
-    const result = await this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx: any) => {
       // Create Organization
       const org = await tx.organization.create({
         data: {
@@ -47,7 +47,7 @@ export class AuthService {
       // Create all permissions for admin role
       const allPermissions = await tx.permission.findMany();
       await tx.rolePermission.createMany({
-        data: allPermissions.map((p) => ({ roleId: role.id, permissionId: p.id })),
+        data: allPermissions.map((p: any) => ({ roleId: role.id, permissionId: p.id })),
       });
 
       // Create admin user
