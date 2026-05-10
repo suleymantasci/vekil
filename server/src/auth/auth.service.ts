@@ -79,7 +79,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
-      include: { role: true, organization: true },
+      include: { roles: { include: { role: true } }, organization: true },
     });
 
     if (!user || !user.isActive) {
@@ -117,7 +117,7 @@ export class AuthService {
   async refreshToken(token: string) {
     const refreshToken = await this.prisma.refreshToken.findUnique({
       where: { token },
-      include: { user: { include: { organization: true, role: true } } },
+      include: { user: { include: { organization: true, roles: { include: { role: true } } } } },
     });
 
     if (!refreshToken || refreshToken.expiresAt < new Date()) {
