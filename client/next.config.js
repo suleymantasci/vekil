@@ -51,6 +51,7 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   // Trailing slashes for SEO consistency
   trailingSlash: false,
   
