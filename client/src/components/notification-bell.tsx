@@ -30,7 +30,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('vekil_access_token');
       if (!token || !user) return;
 
-      const res = await fetch(`http://localhost:3000/api/notifications?userId=${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications?userId=${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -49,7 +49,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('vekil_access_token');
       if (!token || !user) return;
 
-      const res = await fetch(`http://localhost:3000/api/notifications/${id}/read?userId=${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/${id}/read?userId=${user.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -67,7 +67,7 @@ export default function NotificationBell() {
       const token = localStorage.getItem('vekil_access_token');
       if (!token || !user) return;
 
-      const res = await fetch(`http://localhost:3000/api/notifications/read-all?userId=${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notifications/read-all?userId=${user.id}`, {
         method: 'PATCH',
         headers: { Authorization: `Bearer ${token}` },
       });

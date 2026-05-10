@@ -30,13 +30,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const storedUser = localStorage.getItem('vekil_user');
     const storedOrg = localStorage.getItem('vekil_org');
 
-    if (!token || !storedUser) {
+    if (!token) {
       router.push('/login');
       return;
     }
 
-    setUser(JSON.parse(storedUser));
-    storedOrg && setOrg(JSON.parse(storedOrg));
+    // Safe JSON parse - returns null if invalid
+    const safeParse = (val: string | null) => {
+      if (!val) return null;
+      try { return JSON.parse(val) || null; } catch { return null; }
+    };
+
+    const user = safeParse(storedUser);
+    if (!user) {
+      localStorage.removeItem('vekil_access_token');
+      localStorage.removeItem('vekil_refresh_token');
+      localStorage.removeItem('vekil_user');
+      localStorage.removeItem('vekil_org');
+      router.push('/login');
+      return;
+    }
+
+    setUser(user);
+    const org = safeParse(storedOrg);
+    if (org) setOrg(org);
   }, [router]);
 
   const handleLogout = () => {

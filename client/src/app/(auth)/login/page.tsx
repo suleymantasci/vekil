@@ -18,10 +18,10 @@ export default function LoginPage() {
 
     try {
       const { data } = await authApi.login(email, password);
-      localStorage.setItem('vekil_access_token', data.accessToken);
-      localStorage.setItem('vekil_refresh_token', data.refreshToken);
-      localStorage.setItem('vekil_user', JSON.stringify(data.user));
-      localStorage.setItem('vekil_org', JSON.stringify(data.organization));
+      localStorage.setItem('vekil_access_token', data.accessToken ?? '');
+      localStorage.setItem('vekil_refresh_token', data.refreshToken ?? '');
+      localStorage.setItem('vekil_user', JSON.stringify(data.user ?? null));
+      localStorage.setItem('vekil_org', JSON.stringify(data.organization ?? null));
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Giriş başarısız');
