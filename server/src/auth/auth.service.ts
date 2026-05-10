@@ -96,16 +96,20 @@ export class AuthService {
     // Generate tokens
     const tokens = await this.generateTokens(user.id, user.organizationId);
 
-    // Audit log
-    await this.prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        organizationId: user.organizationId,
-        action: 'LOGIN',
-        resource: 'auth',
-        ipAddress: '0.0.0.0',
-      },
-    });
+    // Audit log - wrapped in try/catch to prevent auth failures
+    try {
+      await this.prisma.auditLog.create({
+        data: {
+          userId: user.id,
+          organizationId: user.organizationId,
+          action: 'LOGIN',
+          resource: 'auth',
+          ipAddress: '0.0.0.0',
+        },
+      });
+    } catch (err) {
+      console.error('AuditLog error (non-fatal):', err.message);
+    }
 
     return {
       user: this.sanitizeUser(user),
