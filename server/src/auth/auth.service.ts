@@ -77,6 +77,7 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
+    console.log('[DEBUG] login called, prisma:', typeof this.prisma, 'auditLog:', typeof this.prisma?.auditLog);
     const user = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: { roles: { include: { role: true } }, organization: true },
