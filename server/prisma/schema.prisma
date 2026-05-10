@@ -414,8 +414,8 @@ model WorkOrder {
 
   building    Building    @relation(fields: [buildingId], references: [id])
   asset       Asset?      @relation(fields: [assetId], references: [id])
-  reporter    User        @relation(fields: [reportedBy], references: [id])
-  assignee    User?       @relation(fields: [assignedTo], references: [id])
+  reporter    User        @relation("WorkOrderReporter", fields: [reportedBy], references: [id])
+  assignee    User?       @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
 }
 
 model KvkkConsent {

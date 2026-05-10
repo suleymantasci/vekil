@@ -3,12 +3,11 @@ version: '3.8'
 services:
   vekil-server:
     build:
-      context: ./server
+      context: .
       dockerfile: Dockerfile
+      target: server-run
     container_name: vekil-server
     restart: unless-stopped
-    ports:
-      - "3001:3001"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
@@ -26,8 +25,9 @@ services:
 
   vekil-client:
     build:
-      context: ./client
+      context: .
       dockerfile: Dockerfile
+      target: client-run
     container_name: vekil-client
     restart: unless-stopped
     depends_on:
@@ -39,12 +39,14 @@ services:
       - vekil-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.vekil-client.rule=Host(`vekil.tasci.cloud`)"
+      - "traefik.http.routers.vekil-client.rule=Host(`vekil.tasci.cloud`) && PathPrefix(`/`)"
       - "traefik.http.routers.vekil-client.entrypoints=websecure"
       - "traefik.http.routers.vekil-client.tls=true"
       - "traefik.http.routers.vekil-client.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.vekil-client.priority=1"
       - "traefik.http.services.vekil-client.loadbalancer.server.port=3000"
 
 networks:
   vekil-network:
-    external: false
+    external: true
+    name: tasci-web
