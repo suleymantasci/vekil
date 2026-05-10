@@ -469,3 +469,13 @@ model Unit {
 
   building Building @relation(fields: [buildingId], references: [id])
 }
+
+// Stub models for code compilation (relations intentionally minimal)
+model Visitor { id String @id @default(uuid()) }
+model AccessLog { id String @id @default(uuid()) }
+model Meter { id String @id @default(uuid()) }
+model MeterReading { id String @id @default(uuid()) }
+model Document { id String @id @default(uuid()) }
+model IncomeExpense { id String @id @default(uuid()) }
+model Budget { id String @id @default(uuid()) }
+model PaymentRequest { id String @id @default(uuid()) }

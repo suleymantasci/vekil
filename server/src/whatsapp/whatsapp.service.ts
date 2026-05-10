@@ -38,7 +38,7 @@ export class WhatsAppService {
     // Kullanıcıyı telefon numarasından bul
     const user = await this.prisma.user.findFirst({
       where: {
-        phoneEncrypted: false,
+        
         phone: from,
       },
       include: {
