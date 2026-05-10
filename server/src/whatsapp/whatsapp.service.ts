@@ -281,7 +281,7 @@ export class WhatsAppService {
    * KVKK onayı ver
    */
   async grantConsent(userId: string, channel: string, purpose: string, metadata: { ipAddress?: string; userAgent?: string }): Promise<void> {
-    await this.prisma.kvkKConsent.upsert({
+    await this.prisma.kvkkConsent.upsert({
       where: {
         userId_channel_purpose: { userId, channel, purpose },
       },

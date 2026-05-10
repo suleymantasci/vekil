@@ -35,6 +35,7 @@ describe('WorkOrdersService', () => {
       const result = await service.create('user-1', 'org-1', {
         title: 'Asansör arızası',
         description: 'Asansör çalışmıyor',
+        buildingId: 'bld-1',
       });
 
       expect(result).toEqual(mockWorkOrder);
