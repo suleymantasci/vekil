@@ -57,8 +57,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const navItems = [
     { href: '/dashboard', label: 'Ana Sayfa', icon: '🏠' },
     { href: '/buildings', label: 'Binalar', icon: '🏢' },
+    { href: '/assets', label: 'Demirbaşlar', icon: '📦' },
     { href: '/charges', label: 'Tahakkuk', icon: '💰' },
     { href: '/payments', label: 'Ödemeler', icon: '💳' },
+    { href: '/work-orders', label: 'İş Emirleri', icon: '🔧' },
     { href: '/settings/tahakkuk-rules', label: 'Aidat Kuralları', icon: '📋' },
     { href: '/users', label: 'Kullanıcılar', icon: '👥' },
     { href: '/roles', label: 'Roller', icon: '🔐' },
