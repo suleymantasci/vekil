@@ -25,6 +25,7 @@ export class VotesService {
       data: {
         meetingId: dto.meetingId,
         organizationId: organizationId,
+        organizationId: organizationId,
         title: dto.title,
         description: dto.description,
         voteType: dto.voteType || 'OPEN',
