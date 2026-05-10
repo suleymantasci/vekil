@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../auth/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
-import { paginate } from '../common/interfaces/database/pagination.interface';
+import { paginate } from '../common/interfaces/api-response.interface';
 
 @Injectable()
 export class UsersService {
