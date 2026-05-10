@@ -1,461 +1,461 @@
-// Vekil - Multi-Tenant PostgreSQL Schema with RLS
-// Generator configuration
 generator client {
   provider = "prisma-client-js"
 }
 
-// DataSource
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Enums
-enum UserRole {
-  SUPER_ADMIN
-  ORGANIZATION_ADMIN
-  BUILDING_MANAGER
-  RESIDENT
-  SECURITY
-  TECHNICIAN
-}
-
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
-  LOGIN
-  LOGOUT
-}
-
-enum ChargeType {
-  MONTHLY_FEE      // Aylık aidat
-  CONSUMPTION      // Tüketim (su, elektrik)
-  DUES             // Kapıcı, temizlik gibi diğer aidatlar
-  PENALTY          // Gecikme cezası
-  OTHER            // Diğer
-}
-
-enum ChargeStatus {
-  PENDING      // Ödenmemiş
-  PARTIAL      // Kısmi ödenmiş
-  PAID         // Tam ödenmiş
-  CANCELLED    // İptal edilmiş
-}
-
-enum PaymentMethod {
-  CASH
-  BANK_TRANSFER
-  CREDIT_CARD
-  DIGITAL_WALLET
-}
-
-enum InvoiceStatus {
-  DRAFT
-  ISSUED
-  PAID
-  CANCELLED
-  OVERDUE
-}
-
-// ============================================
-// ORGANIZATION (Tenant)
-// ============================================
 model Organization {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  logo      String?
-  address   String?
-  phone     String?
-  email     String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  name          String
+  taxNumber     String?
+  address       String?
+  phone         String?
+  email         String?
+  logo          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  // Relations
-  buildings      Building[]
-  users          User[]
-  roles          Role[]
-  permissions    Permission[]
-  rolePermissions RolePermission[]
-  auditLogs      AuditLog[]
-  charges        Charge[]
-  payments       Payment[]
-  invoices       Invoice[]
-  tahakkukRules  TahakkukRule[]
-
-  @@map("organizations")
+  buildings     Building[]
+  users         User[]
+  roles         Role[]
+  auditLogs     AuditLog[]
+  reservations  Reservation[]
+  announcements Announcement[]
+  meetings      Meeting[]
+  votes         Vote[]
+  suppliers     Supplier[]
+  purchaseRequests PurchaseRequest[]
 }
 
-// ============================================
-// BUILDING (Site / Apartman)
-// ============================================
 model Building {
-  id              String   @id @default(uuid())
-  organizationId  String   @map("organization_id")
-  name            String
-  address         String
-  city            String?
-  district        String?
-  latitude        Float?
-  longitude       Float?
-  totalFloors     Int      @default(1) @map("total_floors")
-  totalApartments Int      @map("total_apartments")
-  managerName     String?  @map("manager_name")
-  managerPhone    String?  @map("manager_phone")
-  managerEmail    String?  @map("manager_email")
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  // Relations
-  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  apartments   Apartment[]
-  assets       Asset[]
-
-  @@map("buildings")
-}
-
-// ============================================
-// APARTMENT (Daire)
-// ============================================
-model Apartment {
   id             String   @id @default(uuid())
-  buildingId     String   @map("building_id")
-  number         String   // "101", "102", "1A" gibi
-  floor          Int
-  block          String?  // A, B, C blok
-  areaM2         Float    @map("area_m2")
-  shareRatio     Float    @map("share_ratio") // Arsa payı oranı
-  type           String   @default("residential") // residential, commercial
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  organizationId String
+  name           String
+  address        String?
+  yearBuilt      Int?
+  totalFloors     Int?
+  totalApartments Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  // Relations
-  building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  users    User[]
-
-  // Financial
-  charges  Charge[]
-  payments Payment[]
-
-  @@unique([buildingId, number])
-  @@map("apartments")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  apartments     Apartment[]
+  assets         Asset[]
+  workOrders     WorkOrder[]
+  reservations   Reservation[]
+  meetings       Meeting[]
+  units          Unit[]
 }
 
-// ============================================
-// USER
-// ============================================
+model Apartment {
+  id           String   @id @default(uuid())
+  buildingId   String
+  unitNumber   String
+  floor        Int?
+  areaM2       Float?
+  shareRatio   Float   @default(1)
+  type         String   @default("RESIDENCE") // RESIDENCE, COMMERCIAL
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  building     Building @relation(fields: [buildingId], references: [id])
+  users         User[]
+  charges       Charge[]
+  payments      Payment[]
+  workOrders    WorkOrder[]
+  reservations  Reservation[]
+  meetingAttendances MeetingAttendance[]
+  voteParticipants VoteParticipant[]
+}
+
 model User {
-  id             String    @id @default(uuid())
-  organizationId String    @map("organization_id")
-  apartmentId    String?   @map("apartment_id")
-  roleId         String    @map("role_id")
-  email          String    @unique
-  passwordHash   String    @map("password_hash")
-  firstName      String    @map("first_name")
-  lastName       String    @map("last_name")
-  phone          String    // Encrypted
-  phoneEncrypted Boolean   @default(true) @map("phone_encrypted")
-  tcNo           String?   @map("tc_no") // Encrypted
-  isActive       Boolean   @default(true) @map("is_active")
-  emailVerified  Boolean   @default(false) @map("email_verified")
-  phoneVerified  Boolean   @default(false) @map("phone_verified")
-  lastLoginAt    DateTime? @map("last_login_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String?
+  apartmentId    String?
+  email          String   @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  phone          String?
+  avatar         String?
+  isActive       Boolean  @default(true)
+  lastLoginAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  // Relations
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  apartment    Apartment?   @relation(fields: [apartmentId], references: [id])
-  role         Role         @relation(fields: [roleId], references: [id])
-  auditLogs    AuditLog[]
-
-  // Financial
-  charges      Charge[]
-  payments     Payment[]
-
-  // KVKK
-  kvkkConsents KvkKConsent[]
-
-  @@map("users")
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  building       Building?   @relation(fields: [buildingId], references: [id])
+  apartment      Apartment?  @relation(fields: [apartmentId], references: [id])
+  roles          UserRole[]
+  workOrders     WorkOrder[]
+  auditLogs      AuditLog[]
+  kvkkConsents   KvkkConsent[]
+  reservations   Reservation[]
+  meetingAttendances MeetingAttendance[]
+  voteParticipants VoteParticipant[]
+  notifications  Notification[]
 }
 
-// ============================================
-// ROLE & PERMISSION
-// ============================================
 model Role {
-  id             String       @id @default(uuid())
-  organizationId String      @map("organization_id")
+  id             String   @id @default(uuid())
+  organizationId String
   name           String
   description    String?
-  isSystem       Boolean      @default(false) @map("is_system")
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  users          User[]
+  organization   Organization @relation(fields: [organizationId], references: [id])
   permissions    RolePermission[]
-
-  @@unique([organizationId, name])
-  @@map("roles")
+  users          UserRole[]
 }
 
 model Permission {
-  id             String       @id @default(uuid())
-  name           String      // "users:create", "buildings:read"
-  resource       String      // "users", "buildings", "apartments"
-  action         String      // "create", "read", "update", "delete"
-  description    String?
-  createdAt      DateTime     @default(now()) @map("created_at")
+  id        String   @id @default(uuid())
+  resource  String   // buildings, apartments, charges, payments, users, roles, workorders, assets, whatsapp, reservations, meetings, votes, suppliers
+  action    String   // create, read, update, delete, approve
+  createdAt DateTime @default(now())
 
-  organizations  Organization[]
   rolePermissions RolePermission[]
+}
 
-  @@unique([name])
-  @@map("permissions")
+model UserRole {
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id])
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
 }
 
 model RolePermission {
-  roleId       String @map("role_id")
-  permissionId String @map("permission_id")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id         String     @id @default(uuid())
+  roleId     String
+  permissionId String
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
 
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-  @@map("role_permissions")
+  @@unique([roleId, permissionId])
 }
 
-// ============================================
-// ASSET (Demirbaş - Jeneratör, Asansör, Havuz)
-// ============================================
+model AuditLog {
+  id             String   @id @default(uuid())
+  organizationId String
+  userId         String
+  action         String
+  resource       String
+  resourceId     String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+}
+
+model TahakkukRule {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String
+  name           String
+  description    String?
+  calculationType String  // fixed, area_m2, share_ratio
+  amount         Float
+  periodStart    DateTime
+  periodEnd      DateTime
+  dueDate       DateTime
+  isActive      Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Charge {
+  id             String   @id @default(uuid())
+  organizationId String
+  apartmentId    String
+  tahakkukRuleId String
+  period         String   // 2024-01, 2024-02
+  amount         Float
+  status         String   @default("PENDING") // PENDING, PARTIAL, PAID
+  dueDate        DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  apartment      Apartment @relation(fields: [apartmentId], references: [id])
+  lateFees       LateFee[]
+  payments       Payment[]
+  invoice        Invoice?
+}
+
+model LateFee {
+  id         String   @id @default(uuid())
+  chargeId   String
+  amount     Float
+  daysLate   Int
+  rate       Float   // daily rate used
+  calculatedAt DateTime @default(now())
+  dueDate    DateTime
+  isPaid     Boolean  @default(false)
+  charge     Charge   @relation(fields: [chargeId], references: [id])
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  organizationId String
+  apartmentId    String
+  chargeId       String?
+  amount         Float
+  paymentMethod  String   // BANK_TRANSFER, CREDIT_CARD, CASH
+  paidAt         DateTime @default(now())
+  description    String?
+  referenceNo    String?
+  confirmedBy    String?
+  createdAt      DateTime @default(now())
+
+  apartment      Apartment @relation(fields: [apartmentId], references: [id])
+  charge         Charge?   @relation(fields: [chargeId], references: [id])
+}
+
+model Invoice {
+  id             String   @id @default(uuid())
+  chargeId       String   @unique
+  invoiceNo      String   @unique
+  amount         Float
+  status         String   @default("DRAFT") // DRAFT, SENT, PAID
+  sentAt         DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+  charge         Charge   @relation(fields: [chargeId], references: [id])
+}
+
 model Asset {
-  id          String   @id @default(uuid())
-  buildingId  String   @map("building_id")
-  name        String
-  type        String   // "elevator", "generator", "pool", "hvac", "other"
-  brand       String?
-  model       String?
-  serialNo    String?  @map("serial_no")
-  warrantyEnd DateTime? @map("warranty_end")
-  installDate DateTime? @map("install_date")
-  location    String?
+  id           String   @id @default(uuid())
+  buildingId   String
+  name         String
+  type         String   // elevator, generator, pool, hvac, other
+  brand        String?
+  model        String?
+  serialNo     String?
+  location     String?
+  warrantyEnd  DateTime?
+  installDate DateTime?
   notes       String?
   isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  building   Building      @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  workOrders WorkOrder[]
-
-  @@map("assets")
+  building    Building    @relation(fields: [buildingId], references: [id])
+  workOrders  WorkOrder[]
 }
 
-// ============================================
-// WORK ORDER (Teknik Servis İş Emri)
-// ============================================
 model WorkOrder {
-  id          String      @id @default(uuid())
-  assetId     String?     @map("asset_id")
-  reportedBy  String      @map("reported_by") // User ID
-  assignedTo  String?     @map("assigned_to") // User ID
-  title       String
-  description String
-  priority    String      @default("medium") // low, medium, high, urgent
-  status      String      @default("open") // open, in_progress, pending, resolved, closed
-  category    String?     // "electrical", "plumbing", "structural", "other"
-  location    String?
-  photos      String[]    // URL array
-  resolution  String?
-  resolvedAt  DateTime?   @map("resolved_at")
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-
-  asset     Asset? @relation(fields: [assetId], references: [id])
-  reporter  User   @relation("WorkOrderReporter", fields: [reportedBy], references: [id])
-  assignee  User?  @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
-
-  @@map("work_orders")
-}
-
-// ============================================
-// TAHAKKUK RULE (Aidat Kuralı)
-// ============================================
-model TahakkukRule {
-  id             String      @id @default(uuid())
-  organizationId String      @map("organization_id")
-  buildingId     String?     @map("building_id") // null = tüm binalar
-  name           String      // "Aylık Aidat", "Kapıcı Ücreti"
-  chargeType     ChargeType  @default(MONTHLY_FEE)
-  calculationType String     @default("fixed") // "fixed", "area_m2", "share_ratio"
-  amount         Float       @default(0) // Sabit tutar veya oran
-  dueDay         Int         @default(5) // Ödeme günü (1-28)
-  isActive       Boolean     @default(true) @map("is_active")
-  description    String?
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  building     Building?     @relation(fields: [buildingId], references: [id])
-
-  @@map("tahakkuk_rules")
-}
-
-// ============================================
-// CHARGE (Tahakkuk - Borç)
-// ============================================
-model Charge {
-  id             String      @id @default(uuid())
-  organizationId String      @map("organization_id")
-  apartmentId    String      @map("apartment_id")
-  userId         String?     @map("user_id") // Borçlu kullanıcı
-  period         String      // "2026-05", "2026-Q1" (dönem)
-  description    String
-  chargeType     ChargeType  @default(MONTHLY_FEE)
-  amount         Float       // Borç tutarı
-  paidAmount     Float       @default(0) @map("paid_amount") // Ödenen
-  status         ChargeStatus @default(PENDING)
-  dueDate        DateTime    @map("due_date")
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
-  user         User?        @relation(fields: [userId], references: [id])
-  payments     Payment[]
-  lateFees     LateFee[]
-
-  @@index([organizationId, period])
-  @@index([apartmentId, status])
-  @@map("charges")
-}
-
-// ============================================
-// LATE FEE (Gecikme Faizi - KMK Madde 20)
-// ============================================
-model LateFee {
-  id          String   @id @default(uuid())
-  chargeId    String   @map("charge_id")
-  amount      Float    // Faiz tutarı
-  rate        Float    // Uygulanan faiz oranı (0.05 = %5)
-  calculatedAt DateTime @default(now()) @map("calculated_at")
-  isPaid      Boolean  @default(false) @map("is_paid")
-  paidAt      DateTime? @map("paid_at")
-
-  charge Charge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
-
-  @@map("late_fees")
-}
-
-// ============================================
-// PAYMENT (Ödeme)
-// ============================================
-model Payment {
-  id             String        @id @default(uuid())
-  organizationId String        @map("organization_id")
-  apartmentId    String        @map("apartment_id")
-  userId         String?       @map("user_id")
-  chargeId       String?       @map("charge_id") // null = genel ödeme
-  amount        Float
-  paymentMethod PaymentMethod @default(BANK_TRANSFER) @map("payment_method")
-  reference      String?       // Açıklama / referans
-  paidAt         DateTime      @default(now()) @map("paid_at")
-  createdAt      DateTime      @default(now()) @map("created_at")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
-  user         User?        @relation(fields: [userId], references: [id])
-  charge       Charge?      @relation(fields: [chargeId], references: [id])
-
-  @@map("payments")
-}
-
-// ============================================
-// INVOICE (Fatura / Makbuz)
-// ============================================
-model Invoice {
-  id             String        @id @default(uuid())
-  organizationId String        @map("organization_id")
-  apartmentId    String        @map("apartment_id")
-  userId         String?       @map("user_id")
-  invoiceNumber  String        @map("invoice_number") // ENS-2026-0001
-  type           String        @default("receipt") // "receipt", "invoice", "e_archive"
-  subtotal       Float
-  taxAmount      Float         @default(0) @map("tax_amount")
-  totalAmount    Float         @map("total_amount")
-  status         InvoiceStatus @default(DRAFT)
-  issuedAt       DateTime?     @map("issued_at")
-  dueDate        DateTime?     @map("due_date")
-  paidAt         DateTime?     @map("paid_at")
-  pdfUrl         String?       @map("pdf_url")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
-  user         User?        @relation(fields: [userId], references: [id])
-
-  @@unique([organizationId, invoiceNumber])
-  @@map("invoices")
-}
-
-// ============================================
-// AUDIT LOG
-// ============================================
-model AuditLog {
-  id             String      @id @default(uuid())
-  userId         String      @map("user_id")
-  organizationId String      @map("organization_id")
-  action         AuditAction
-  resource       String
-  resourceId     String?     @map("resource_id")
-  oldValue       Json?       @map("old_value")
-  newValue       Json?       @map("new_value")
-  ipAddress      String?     @map("ip_address")
-  userAgent      String?     @map("user_agent")
-  createdAt      DateTime    @default(now()) @map("created_at")
-
-  user         User         @relation(fields: [userId], references: [id])
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-
-  @@map("audit_logs")
-}
-
-// ============================================
-// REFRESH TOKEN
-// ============================================
-model RefreshToken {
   id           String   @id @default(uuid())
-  userId       String   @map("user_id")
-  token        String   @unique
-  expiresAt    DateTime @map("expires_at")
-  createdAt    DateTime @default(now()) @map("created_at")
+  buildingId   String
+  assetId      String?
+  reportedBy   String
+  assignedTo   String?
+  title        String
+  description  String
+  category     String   @default("other") // electrical, plumbing, structural, other
+  location     String?
+  photos       String[] @default([])
+  priority     String   @default("medium") // low, medium, high, urgent
+  status       String   @default("open") // open, in_progress, pending, resolved, closed
+  resolution   String?
+  resolvedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  @@index([userId])
-  @@map("refresh_tokens")
+  building    Building    @relation(fields: [buildingId], references: [id])
+  asset       Asset?      @relation(fields: [assetId], references: [id])
+  reporter    User        @relation(fields: [reportedBy], references: [id])
+  assignee    User?       @relation(fields: [assignedTo], references: [id])
 }
 
-// ============================================
-// KVKK Consent (WhatsApp onay)
-// ============================================
-model KvkKConsent {
-  id          String   @id @default(uuid())
-  userId      String   @map("user_id")
-  channel     String   // "whatsapp", "email", "sms"
-  purpose     String   // "chatbot", "notification", "marketing"
-  granted     Boolean
-  ipAddress   String?  @map("ip_address")
-  userAgent   String?  @map("user_agent")
-  grantedAt   DateTime @map("granted_at")
-  revokedAt   DateTime? @map("revoked_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model KvkkConsent {
+  id         String   @id @default(uuid())
+  userId     String
+  channel    String   // whatsapp, email, sms
+  purpose    String   // chatbot, marketing, notification
+  granted    Boolean
+  grantedAt  DateTime @default(now())
+  revokedAt  DateTime?
+  ipAddress  String?
+  userAgent  String?
+  user       User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, channel, purpose])
-  @@map("kvkk_consents")
+}
+
+model Reservation {
+  id           String   @id @default(uuid())
+  organizationId String
+  buildingId   String
+  apartmentId  String
+  facility     String   // pool, court, parking, meeting_room, gym, other
+  title        String
+  startTime    DateTime
+  endTime      DateTime
+  status       String   @default("PENDING") // PENDING, APPROVED, REJECTED, CANCELLED
+  notes        String?
+  approvedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  building     Building     @relation(fields: [buildingId], references: [id])
+  apartment    Apartment    @relation(fields: [apartmentId], references: [id])
+}
+
+model Announcement {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId    String?
+  title         String
+  body          String
+  type          String   @default("INFO") // INFO, WARNING, URGENT, EVENT
+  isPublished   Boolean  @default(false)
+  publishedAt   DateTime?
+  startDate    DateTime?
+  endDate      DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  building     Building?    @relation(fields: [buildingId], references: [id])
+}
+
+model Meeting {
+  id             String   @id @default(uuid())
+  organizationId String
+  buildingId     String
+  title          String
+  description    String?
+  meetingDate    DateTime
+  location       String?
+  status         String   @default("DRAFT") // DRAFT, SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED
+  minutes        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization  Organization       @relation(fields: [organizationId], references: [id])
+  building      Building           @relation(fields: [buildingId], references: [id])
+  attendances   MeetingAttendance[]
+  votes         Vote[]
+}
+
+model MeetingAttendance {
+  id         String   @id @default(uuid())
+  meetingId  String
+  apartmentId String
+  userId     String
+  present    Boolean  @default(false)
+  voteWeight Float   @default(1) // based on share ratio
+  createdAt  DateTime @default(now())
+
+  meeting   Meeting   @relation(fields: [meetingId], references: [id])
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([meetingId, apartmentId])
+}
+
+model Vote {
+  id         String   @id @default(uuid())
+  meetingId  String
+  title      String
+  description String?
+  voteType   String   @default("OPEN") // OPEN, SECRET, BINDING, CONSULTATIVE
+  options    Json    // ["Evet", "Hayır", "Çekimser"]
+  status     String   @default("OPEN") // OPEN, CLOSED
+  closesAt   DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  meeting    Meeting           @relation(fields: [meetingId], references: [id])
+  participants VoteParticipant[]
+}
+
+model VoteParticipant {
+  id         String   @id @default(uuid())
+  voteId     String
+  apartmentId String
+  userId     String
+  option     String   // voted option
+  weight     Float   @default(1)
+  createdAt  DateTime @default(now())
+
+  vote      Vote     @relation(fields: [voteId], references: [id])
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([voteId, apartmentId])
+}
+
+model Supplier {
+  id             String   @id @default(uuid())
+  organizationId String
+  name           String
+  contactName    String?
+  phone          String?
+  email          String?
+  address        String?
+  category       String   // construction, cleaning, security, maintenance, other
+  rating         Float?
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization   Organization       @relation(fields: [organizationId], references: [id])
+  purchaseRequests PurchaseRequest[]
+}
+
+model PurchaseRequest {
+  id             String   @id @default(uuid())
+  organizationId String
+  supplierId     String?
+  buildingId     String
+  title          String
+  description    String
+  category       String   // construction, cleaning, security, maintenance, other
+  status         String   @default("DRAFT") // DRAFT, PUBLISHED, RECEIVED, APPROVED, REJECTED, AWARDED, CANCELLED
+  estimatedAmount Float?
+  awardedAmount  Float?
+  deadline       DateTime?
+  notes          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  supplier       Supplier?    @relation(fields: [supplierId], references: [id])
+}
+
+model Notification {
+  id     String   @id @default(uuid())
+  userId String
+  title String
+  body  String
+  type  String   @default("INFO") // INFO, WARNING, URGENT
+  isRead Boolean @default(false)
+  data  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Unit {
+  id         String   @id @default(uuid())
+  buildingId String
+  name       String   // "1. Kat", "Bodrum", "Çatı"
+  type       String   // floor, basement, roof, parking, storage
+  createdAt DateTime @default(now())
+
+  building Building @relation(fields: [buildingId], references: [id])
 }

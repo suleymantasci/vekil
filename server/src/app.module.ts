@@ -23,6 +23,12 @@ import { WorkOrdersModule } from './work-orders/work-orders.module';
 import { AssetsModule } from './assets/assets.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
 
+// Phase 4 Modules
+import { ReservationsModule } from './reservations/reservations.module';
+import { MeetingsModule } from './meetings/meetings.module';
+import { VotesModule } from './votes/votes.module';
+import { PurchasesModule } from './purchases/purchases.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -68,6 +74,12 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
     WorkOrdersModule,
     AssetsModule,
     WhatsAppModule,
+
+    // Phase 4 Modules
+    ReservationsModule,
+    MeetingsModule,
+    VotesModule,
+    PurchasesModule,
   ],
   controllers: [],
   providers: [],

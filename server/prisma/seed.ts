@@ -107,6 +107,37 @@ async function main() {
     { name: 'whatsapp:read', resource: 'whatsapp', action: 'read', description: 'WhatsApp mesajlarını görüntüleme' },
     { name: 'whatsapp:send', resource: 'whatsapp', action: 'send', description: 'WhatsApp mesaj gönderme' },
     { name: 'whatsapp:optin', resource: 'whatsapp', action: 'optin', description: 'KVKK onayı yönetme' },
+
+    // === PHASE 4: RESERVATIONS ===
+    { name: 'reservations:create', resource: 'reservations', action: 'create', description: 'Rezervasyon oluşturma' },
+    { name: 'reservations:read', resource: 'reservations', action: 'read', description: 'Rezervasyon görüntüleme' },
+    { name: 'reservations:update', resource: 'reservations', action: 'update', description: 'Rezervasyon güncelleme' },
+    { name: 'reservations:delete', resource: 'reservations', action: 'delete', description: 'Rezervasyon silme' },
+    { name: 'reservations:approve', resource: 'reservations', action: 'approve', description: 'Rezervasyon onaylama' },
+
+    // === PHASE 4: MEETINGS & VOTES ===
+    { name: 'meetings:create', resource: 'meetings', action: 'create', description: 'Toplantı oluşturma' },
+    { name: 'meetings:read', resource: 'meetings', action: 'read', description: 'Toplantı görüntüleme' },
+    { name: 'meetings:update', resource: 'meetings', action: 'update', description: 'Toplantı güncelleme' },
+    { name: 'meetings:delete', resource: 'meetings', action: 'delete', description: 'Toplantı silme' },
+    { name: 'meetings:attendance', resource: 'meetings', action: 'attendance', description: 'Yoklama alma' },
+
+    { name: 'votes:create', resource: 'votes', action: 'create', description: 'Oylama oluşturma' },
+    { name: 'votes:read', resource: 'votes', action: 'read', description: 'Oylama görüntüleme' },
+    { name: 'votes:vote', resource: 'votes', action: 'vote', description: 'Oy kullanma' },
+    { name: 'votes:close', resource: 'votes', action: 'close', description: 'Oylama kapatma' },
+
+    // === PHASE 4: PURCHASES & SUPPLIERS ===
+    { name: 'purchases:create', resource: 'purchases', action: 'create', description: 'Satın alma talebi oluşturma' },
+    { name: 'purchases:read', resource: 'purchases', action: 'read', description: 'Satın alma taleplerini görüntüleme' },
+    { name: 'purchases:update', resource: 'purchases', action: 'update', description: 'Satın alma talebi güncelleme' },
+    { name: 'purchases:delete', resource: 'purchases', action: 'delete', description: 'Satın alma talebi silme' },
+    { name: 'purchases:approve', resource: 'purchases', action: 'approve', description: 'Satın alma onaylama' },
+
+    { name: 'suppliers:create', resource: 'suppliers', action: 'create', description: 'Tedarikçi oluşturma' },
+    { name: 'suppliers:read', resource: 'suppliers', action: 'read', description: 'Tedarikçi görüntüleme' },
+    { name: 'suppliers:update', resource: 'suppliers', action: 'update', description: 'Tedarikçi güncelleme' },
+    { name: 'suppliers:delete', resource: 'suppliers', action: 'delete', description: 'Tedarikçi silme' },
   ];
 
   console.log('📝 Creating permissions...');
