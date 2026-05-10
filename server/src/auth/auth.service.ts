@@ -98,17 +98,11 @@ export class AuthService {
     const tokens = await this.generateTokens(user.id, user.organizationId);
 
     // Audit log - wrapped in try/catch to prevent auth failures
-    // Using eval to bypass TypeScript/strict mode issues with Prisma client
     try {
-      eval('this.prisma.auditLog.create({
-        data: {
-          userId: user.id,
-          organizationId: user.organizationId,
-          action: \'LOGIN\',
-          resource: \'auth\',
-          ipAddress: \'0.0.0.0\',
-        },
-      })');
+      const p: any = this.prisma;
+      await p.auditLog.create({
+        data: { userId: user.id, organizationId: user.organizationId, action: 'LOGIN', resource: 'auth', ipAddress: '0.0.0.0' },
+      });
     } catch (err) {
       console.error('AuditLog error (non-fatal):', err.message);
     }
