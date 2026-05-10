@@ -28,6 +28,36 @@ enum AuditAction {
   LOGOUT
 }
 
+enum ChargeType {
+  MONTHLY_FEE      // Aylık aidat
+  CONSUMPTION      // Tüketim (su, elektrik)
+  DUES             // Kapıcı, temizlik gibi diğer aidatlar
+  PENALTY          // Gecikme cezası
+  OTHER            // Diğer
+}
+
+enum ChargeStatus {
+  PENDING      // Ödenmemiş
+  PARTIAL      // Kısmi ödenmiş
+  PAID         // Tam ödenmiş
+  CANCELLED    // İptal edilmiş
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  DIGITAL_WALLET
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  CANCELLED
+  OVERDUE
+}
+
 // ============================================
 // ORGANIZATION (Tenant)
 // ============================================
@@ -44,12 +74,16 @@ model Organization {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  buildings     Building[]
-  users         User[]
-  roles         Role[]
-  permissions   Permission[]
+  buildings      Building[]
+  users          User[]
+  roles          Role[]
+  permissions    Permission[]
   rolePermissions RolePermission[]
-  auditLogs     AuditLog[]
+  auditLogs      AuditLog[]
+  charges        Charge[]
+  payments       Payment[]
+  invoices       Invoice[]
+  tahakkukRules  TahakkukRule[]
 
   @@map("organizations")
 }
@@ -58,22 +92,22 @@ model Organization {
 // BUILDING (Site / Apartman)
 // ============================================
 model Building {
-  id             String   @id @default(uuid())
-  organizationId String   @map("organization_id")
-  name           String
-  address        String
-  city           String?
-  district       String?
-  latitude       Float?
-  longitude      Float?
-  totalFloors    Int      @default(1) @map("total_floors")
-  totalApartments Int     @map("total_apartments")
-  managerName    String?  @map("manager_name")
-  managerPhone   String?  @map("manager_phone")
-  managerEmail   String?  @map("manager_email")
-  isActive       Boolean  @default(true)
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id              String   @id @default(uuid())
+  organizationId  String   @map("organization_id")
+  name            String
+  address         String
+  city            String?
+  district        String?
+  latitude        Float?
+  longitude       Float?
+  totalFloors     Int      @default(1) @map("total_floors")
+  totalApartments Int      @map("total_apartments")
+  managerName     String?  @map("manager_name")
+  managerPhone    String?  @map("manager_phone")
+  managerEmail    String?  @map("manager_email")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   // Relations
   organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -102,6 +136,10 @@ model Apartment {
   // Relations
   building Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   users    User[]
+
+  // Financial
+  charges  Charge[]
+  payments Payment[]
 
   @@unique([buildingId, number])
   @@map("apartments")
@@ -135,6 +173,13 @@ model User {
   role         Role         @relation(fields: [roleId], references: [id])
   auditLogs    AuditLog[]
 
+  // Financial
+  charges      Charge[]
+  payments     Payment[]
+
+  // KVKK
+  kvkkConsents KvkKConsent[]
+
   @@map("users")
 }
 
@@ -146,7 +191,7 @@ model Role {
   organizationId String      @map("organization_id")
   name           String
   description    String?
-  isSystem       Boolean      @default(false) @map("is_system") // Sistem rolleri değiştirilemez
+  isSystem       Boolean      @default(false) @map("is_system")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
 
@@ -198,7 +243,7 @@ model Asset {
   serialNo    String?  @map("serial_no")
   warrantyEnd DateTime? @map("warranty_end")
   installDate DateTime? @map("install_date")
-  location    String?  // "Bodrum kat", "Çatı"
+  location    String?
   notes       String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
@@ -235,6 +280,127 @@ model WorkOrder {
   assignee  User?  @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
 
   @@map("work_orders")
+}
+
+// ============================================
+// TAHAKKUK RULE (Aidat Kuralı)
+// ============================================
+model TahakkukRule {
+  id             String      @id @default(uuid())
+  organizationId String      @map("organization_id")
+  buildingId     String?     @map("building_id") // null = tüm binalar
+  name           String      // "Aylık Aidat", "Kapıcı Ücreti"
+  chargeType     ChargeType  @default(MONTHLY_FEE)
+  calculationType String     @default("fixed") // "fixed", "area_m2", "share_ratio"
+  amount         Float       @default(0) // Sabit tutar veya oran
+  dueDay         Int         @default(5) // Ödeme günü (1-28)
+  isActive       Boolean     @default(true) @map("is_active")
+  description    String?
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  building     Building?     @relation(fields: [buildingId], references: [id])
+
+  @@map("tahakkuk_rules")
+}
+
+// ============================================
+// CHARGE (Tahakkuk - Borç)
+// ============================================
+model Charge {
+  id             String      @id @default(uuid())
+  organizationId String      @map("organization_id")
+  apartmentId    String      @map("apartment_id")
+  userId         String?     @map("user_id") // Borçlu kullanıcı
+  period         String      // "2026-05", "2026-Q1" (dönem)
+  description    String
+  chargeType     ChargeType  @default(MONTHLY_FEE)
+  amount         Float       // Borç tutarı
+  paidAmount     Float       @default(0) @map("paid_amount") // Ödenen
+  status         ChargeStatus @default(PENDING)
+  dueDate        DateTime    @map("due_date")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+  payments     Payment[]
+  lateFees     LateFee[]
+
+  @@index([organizationId, period])
+  @@index([apartmentId, status])
+  @@map("charges")
+}
+
+// ============================================
+// LATE FEE (Gecikme Faizi - KMK Madde 20)
+// ============================================
+model LateFee {
+  id          String   @id @default(uuid())
+  chargeId    String   @map("charge_id")
+  amount      Float    // Faiz tutarı
+  rate        Float    // Uygulanan faiz oranı (0.05 = %5)
+  calculatedAt DateTime @default(now()) @map("calculated_at")
+  isPaid      Boolean  @default(false) @map("is_paid")
+  paidAt      DateTime? @map("paid_at")
+
+  charge Charge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+
+  @@map("late_fees")
+}
+
+// ============================================
+// PAYMENT (Ödeme)
+// ============================================
+model Payment {
+  id             String        @id @default(uuid())
+  organizationId String        @map("organization_id")
+  apartmentId    String        @map("apartment_id")
+  userId         String?       @map("user_id")
+  chargeId       String?       @map("charge_id") // null = genel ödeme
+  amount        Float
+  paymentMethod PaymentMethod @default(BANK_TRANSFER) @map("payment_method")
+  reference      String?       // Açıklama / referans
+  paidAt         DateTime      @default(now()) @map("paid_at")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+  charge       Charge?      @relation(fields: [chargeId], references: [id])
+
+  @@map("payments")
+}
+
+// ============================================
+// INVOICE (Fatura / Makbuz)
+// ============================================
+model Invoice {
+  id             String        @id @default(uuid())
+  organizationId String        @map("organization_id")
+  apartmentId    String        @map("apartment_id")
+  userId         String?       @map("user_id")
+  invoiceNumber  String        @map("invoice_number") // ENS-2026-0001
+  type           String        @default("receipt") // "receipt", "invoice", "e_archive"
+  subtotal       Float
+  taxAmount      Float         @default(0) @map("tax_amount")
+  totalAmount    Float         @map("total_amount")
+  status         InvoiceStatus @default(DRAFT)
+  issuedAt       DateTime?     @map("issued_at")
+  dueDate        DateTime?     @map("due_date")
+  paidAt         DateTime?     @map("paid_at")
+  pdfUrl         String?       @map("pdf_url")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  apartment    Apartment    @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, invoiceNumber])
+  @@map("invoices")
 }
 
 // ============================================
@@ -287,6 +453,8 @@ model KvkKConsent {
   grantedAt   DateTime @map("granted_at")
   revokedAt   DateTime? @map("revoked_at")
   createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, channel, purpose])
   @@map("kvkk_consents")

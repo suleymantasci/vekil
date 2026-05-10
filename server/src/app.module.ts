@@ -13,6 +13,11 @@ import { ApartmentsModule } from './apartments/apartments.module';
 import { RolesModule } from './roles/roles.module';
 import { PrismaModule } from './auth/prisma.module';
 
+// Finance Modules (Phase 2)
+import { TahakkukModule } from './tahakkuk/tahakkuk.module';
+import { PaymentsModule } from './payments/payments.module';
+import { LateFeesModule } from './late-fees/late-fees.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,6 +53,11 @@ import { PrismaModule } from './auth/prisma.module';
     BuildingsModule,
     ApartmentsModule,
     RolesModule,
+
+    // Finance Modules (Phase 2)
+    TahakkukModule,
+    PaymentsModule,
+    LateFeesModule,
   ],
   controllers: [],
   providers: [],

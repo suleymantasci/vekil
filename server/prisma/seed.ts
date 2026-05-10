@@ -2,8 +2,7 @@
 -- Vekil Seed Script: Initial Permissions & Default Roles
 -- ============================================================
 
-import { PrismaClient, UserRole } from '@prisma/client';
-import * as argon2 from 'argon2';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -59,6 +58,38 @@ async function main() {
     
     // KVKK
     { name: 'kvkk:manage', resource: 'kvkk', action: 'manage', description: 'KVKK onaylarını yönetme' },
+
+    // === PHASE 2: FINANCE PERMISSIONS ===
+
+    // Tahakkuk Rules
+    { name: 'tahakkuk:rules:create', resource: 'tahakkuk_rules', action: 'create', description: 'Aidat kuralı oluşturma' },
+    { name: 'tahakkuk:rules:read', resource: 'tahakkuk_rules', action: 'read', description: 'Aidat kurallarını görüntüleme' },
+    { name: 'tahakkuk:rules:update', resource: 'tahakkuk_rules', action: 'update', description: 'Aidat kuralı güncelleme' },
+    { name: 'tahakkuk:rules:delete', resource: 'tahakkuk_rules', action: 'delete', description: 'Aidat kuralı silme' },
+
+    // Charges (Tahakkuk)
+    { name: 'charges:read', resource: 'charges', action: 'read', description: 'Borçları görüntüleme' },
+    { name: 'charges:create', resource: 'charges', action: 'create', description: 'Borç oluşturma' },
+    { name: 'charges:update', resource: 'charges', action: 'update', description: 'Borç güncelleme' },
+    { name: 'charges:delete', resource: 'charges', action: 'delete', description: 'Borç silme' },
+    { name: 'charges:generate', resource: 'charges', action: 'generate', description: 'Tahakkuk (borç) oluşturma' },
+
+    // Late Fees
+    { name: 'latefees:read', resource: 'late_fees', action: 'read', description: 'Gecikme faizi görüntüleme' },
+    { name: 'latefees:calculate', resource: 'late_fees', action: 'calculate', description: 'Gecikme faizi hesaplama' },
+    { name: 'latefees:waive', resource: 'late_fees', action: 'waive', description: 'Gecikme faizi silme/affetme' },
+
+    // Payments
+    { name: 'payments:read', resource: 'payments', action: 'read', description: 'Ödemeleri görüntüleme' },
+    { name: 'payments:create', resource: 'payments', action: 'create', description: 'Ödeme kaydetme' },
+    { name: 'payments:delete', resource: 'payments', action: 'delete', description: 'Ödeme silme' },
+
+    // Invoices
+    { name: 'invoices:read', resource: 'invoices', action: 'read', description: 'Fatura/makbuz görüntüleme' },
+    { name: 'invoices:create', resource: 'invoices', action: 'create', description: 'Fatura/makbuz oluşturma' },
+    { name: 'invoices:update', resource: 'invoices', action: 'update', description: 'Fatura güncelleme' },
+    { name: 'invoices:delete', resource: 'invoices', action: 'delete', description: 'Fatura silme' },
+    { name: 'invoices:send', resource: 'invoices', action: 'send', description: 'Fatura gönderme' },
   ];
 
   console.log('📝 Creating permissions...');
@@ -98,6 +129,37 @@ async function main() {
     });
   }
   console.log('✅ SUPER_ADMIN role created with all permissions');
+
+  // ============================================
+  // 3. Create KVKK Permission Group (for Phase 2)
+  // ============================================
+  console.log('📝 Creating finance roles...');
+
+  const orgAdminRole = await prisma.role.upsert({
+    where: { name: 'ORGANIZATION_ADMIN' },
+    update: {},
+    create: {
+      name: 'ORGANIZATION_ADMIN',
+      description: 'Kurum yöneticisi - tüm yetkilere sahip',
+      isSystem: true,
+    },
+  });
+
+  // Organization admin gets all finance permissions too
+  const financePerms = allPermissions.filter(p => 
+    ['tahakkuk', 'charges', 'latefees', 'payments', 'invoices'].includes(p.resource)
+  );
+  
+  for (const perm of financePerms) {
+    await prisma.rolePermission.upsert({
+      where: {
+        roleId_permissionId: { roleId: orgAdminRole.id, permissionId: perm.id },
+      },
+      update: {},
+      create: { roleId: orgAdminRole.id, permissionId: perm.id },
+    });
+  }
+  console.log('✅ ORGANIZATION_ADMIN role updated with finance permissions');
 
   console.log('🌱 Seeding completed!');
 }
