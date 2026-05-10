@@ -91,25 +91,30 @@ export class AuthService {
     const validPassword = await argon2.verify(user.passwordHash, dto.password);
     if (!validPassword) {
       // Generic message - same as above to prevent timing attacks
-      throw new Error('Giriş başarısız. Lütfen e-posta ve şifrenizi kontrol edin.');
+      throw new Error('Giriş başarısız. Lütfen e-posta ve şifkenizi kontrol edin.');
     }
 
     // Generate tokens
     const tokens = await this.generateTokens(user.id, user.organizationId);
 
     // Audit log - wrapped in try/catch to prevent auth failures
-    try {
-      await this.prisma.auditLog.create({
-        data: {
-          userId: user.id,
-          organizationId: user.organizationId,
-          action: 'LOGIN',
-          resource: 'auth',
-          ipAddress: '0.0.0.0',
-        },
-      });
-    } catch (err) {
-      console.error('AuditLog error (non-fatal):', err.message);
+    const auditCreate = this.prisma?.auditLog?.create;
+    if (typeof auditCreate === 'function') {
+      try {
+        await auditCreate.call(this.prisma.auditLog, {
+          data: {
+            userId: user.id,
+            organizationId: user.organizationId,
+            action: 'LOGIN',
+            resource: 'auth',
+            ipAddress: '0.0.0.0',
+          },
+        });
+      } catch (err) {
+        console.error('AuditLog error (non-fatal):', err.message);
+      }
+    } else {
+      console.error('[DEBUG] auditLog.create not available, auditLog type:', typeof this.prisma?.auditLog);
     }
 
     return {
