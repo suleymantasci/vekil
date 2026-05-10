@@ -26,6 +26,7 @@ model Organization {
   announcements Announcement[]
   meetings      Meeting[]
   votes         Vote[]
+  workOrders    WorkOrder[]
   suppliers     Supplier[]
   purchaseRequests PurchaseRequest[]
 }
@@ -48,6 +49,9 @@ model Building {
   reservations   Reservation[]
   meetings       Meeting[]
   units          Unit[]
+  users          User[]
+  announcements Announcement[]
+
 }
 
 model Apartment {
@@ -91,13 +95,13 @@ model User {
   building       Building?   @relation(fields: [buildingId], references: [id])
   apartment      Apartment?  @relation(fields: [apartmentId], references: [id])
   roles          UserRole[]
-  workOrders     WorkOrder[]
   auditLogs      AuditLog[]
   kvkkConsents   KvkkConsent[]
-  reservations   Reservation[]
   meetingAttendances MeetingAttendance[]
   voteParticipants VoteParticipant[]
   notifications  Notification[]
+  reportedWorkOrders WorkOrder[] @relation("WorkOrderReporter")
+  assignedWorkOrders WorkOrder[] @relation("WorkOrderAssignee")
 }
 
 model Role {
@@ -157,146 +161,6 @@ model AuditLog {
 
   organization   Organization @relation(fields: [organizationId], references: [id])
   user           User         @relation(fields: [userId], references: [id])
-}
-
-model Document {
-  id             String   @id @default(uuid())
-  organizationId String
-  buildingId     String?
-  name           String
-  originalName   String
-  category       String   // invoice, contract, minutes, receipt, other
-  mimeType       String
-  size           Int
-  storedPath     String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  building       Building?   @relation(fields: [buildingId], references: [id])
-}
-
-model IncomeExpense {
-  id             String   @id @default(uuid())
-  organizationId String
-  buildingId     String?
-  type           String   // INCOME, EXPENSE
-  category       String   // DUES_INCOME, MAINTENANCE_EXPENSE, etc.
-  amount         Float
-  description    String
-  referenceNo    String?
-  transactionDate DateTime
-  createdAt      DateTime @default(now())
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  building       Building?   @relation(fields: [buildingId], references: [id])
-}
-
-model Budget {
-  id             String   @id @default(uuid())
-  organizationId String
-  buildingId     String?
-  year           Int
-  month          Int?
-  category       String
-  plannedAmount  Float
-  actualAmount   Float    @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  building       Building?   @relation(fields: [buildingId], references: [id])
-
-  @@unique([organizationId, year, category, buildingId, month])
-}
-
-model PaymentRequest {
-  id             String   @id @default(uuid())
-  organizationId String
-  apartmentId    String
-  amount         Float
-  currency       String   @default("TRY")
-  description    String?
-  status         String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED, REFUNDED
-  paymentRef     String   @unique
-  paymentUrl     String?
-  providerRef    String?
-  paidAt         DateTime?
-  expiresAt      DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  apartment      Apartment    @relation(fields: [apartmentId], references: [id])
-}
-
-model Visitor {
-  id             String   @id @default(uuid())
-  organizationId String
-  buildingId     String
-  apartmentId    String?
-  visitorName    String
-  visitorPhone   String?
-  purpose        String
-  accessCode     String   @unique
-  qrCodeUrl      String?
-  status         String   @default("PENDING") // PENDING, CHECKED_IN, CHECKED_OUT, EXPIRED
-  expectedArrival DateTime
-  validUntil     DateTime
-  checkedInAt    DateTime?
-  checkedOutAt   DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  building       Building     @relation(fields: [buildingId], references: [id])
-  apartment      Apartment?   @relation(fields: [apartmentId], references: [id])
-  accessLogs     AccessLog[]
-}
-
-model AccessLog {
-  id             String   @id @default(uuid())
-  organizationId String
-  visitorId      String
-  action         String   // CHECK_IN, CHECK_OUT
-  timestamp      DateTime
-  createdAt      DateTime @default(now())
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  visitor        Visitor      @relation(fields: [visitorId], references: [id])
-}
-
-model Meter {
-  id             String   @id @default(uuid())
-  organizationId String
-  buildingId     String
-  apartmentId    String?
-  meterNumber    String
-  meterType      String   // ELECTRICITY, WATER, GAS, HEATING
-  location       String?
-  status         String   @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE
-  lastReading   Float    @default(0)
-  lastReadingDate DateTime?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  building       Building     @relation(fields: [buildingId], references: [id])
-  apartment      Apartment?   @relation(fields: [apartmentId], references: [id])
-  readings       MeterReading[]
-}
-
-model MeterReading {
-  id              String   @id @default(uuid())
-  meterId         String
-  reading         Float
-  readingDate     DateTime
-  previousReading Float?
-  consumption     Float?
-  readBy          String?
-  createdAt       DateTime @default(now())
-
-  meter           Meter     @relation(fields: [meterId], references: [id])
 }
 
 model TahakkukRule {
@@ -416,6 +280,10 @@ model WorkOrder {
   asset       Asset?      @relation(fields: [assetId], references: [id])
   reporter    User        @relation("WorkOrderReporter", fields: [reportedBy], references: [id])
   assignee    User?       @relation("WorkOrderAssignee", fields: [assignedTo], references: [id])
+  organizationId String
+  apartmentId    String?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  apartment      Apartment?  @relation(fields: [apartmentId], references: [id])
 }
 
 model KvkkConsent {
@@ -509,6 +377,7 @@ model MeetingAttendance {
 model Vote {
   id         String   @id @default(uuid())
   meetingId  String
+  organizationId String
   title      String
   description String?
   voteType   String   @default("OPEN") // OPEN, SECRET, BINDING, CONSULTATIVE
@@ -519,6 +388,7 @@ model Vote {
   updatedAt  DateTime @updatedAt
 
   meeting    Meeting           @relation(fields: [meetingId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
   participants VoteParticipant[]
 }
 
