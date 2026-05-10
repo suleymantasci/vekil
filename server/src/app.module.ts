@@ -4,6 +4,12 @@ import { ThrottlerModule, ThrottlerModuleOptions } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+// Common
+import { RateLimitService } from './common/services/rate-limit.service';
+import { AuthThrottlerGuard } from './common/guards/auth-throttler.guard';
+import { AuthenticatedThrottlerGuard } from './common/guards/authenticated-throttler.guard';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+
 // Modules
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -36,14 +42,20 @@ import { PurchasesModule } from './purchases/purchases.module';
       envFilePath: '.env',
     }),
 
-    // Rate limiting: 100 req/min global, auth endpoints override via guards
+    // Rate limiting configuration
+    // - Auth endpoints: handled by AuthThrottlerGuard (IP-based, route-specific)
+    // - Authenticated endpoints: handled by AuthenticatedThrottlerGuard (user-based, 500/min)
+    // - Global fallback: 500 req/min per IP
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService): ThrottlerModuleOptions => ({
         throttlers: [
-          { ttl: 60000, limit: 100 }, // Global: 100 req/min
+          { 
+            ttl: 60000,  // 1 minute window
+            limit: 500,  // 500 req/min - high enough for growth, protects against abuse
+          },
         ],
-        // Ignore user-based tracking for auth endpoints
+        // Use IP for tracking (authenticated endpoints override with user ID in guard)
         getTracker: (req) => req.ip || req.socket?.remoteAddress || '127.0.0.1',
       }),
     }),
@@ -60,6 +72,12 @@ import { PurchasesModule } from './purchases/purchases.module';
 
     // Global Prisma Module
     PrismaModule,
+
+    // Common Services & Guards
+    RateLimitService,
+    AuthThrottlerGuard,
+    AuthenticatedThrottlerGuard,
+    JwtAuthGuard,
 
     // Feature Modules
     AuthModule,
