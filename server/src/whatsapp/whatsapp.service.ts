@@ -84,7 +84,7 @@ export class WhatsAppService {
     const balanceKeywords = ['borcum', 'bakiye', 'ödeme', 'ne kadar', 'borç', 'hesap'];
     const paymentKeywords = ['ödeme', 'para', 'havale', 'nakit', 'kart'];
     const workOrderKeywords = ['arıza', 'tamir', 'sorun', 'problem', 'sıkıntı', 'arıza bildir'];
-    const helpKeywords = ['yardım', 'help', 'komut', 'destek'];
+    const helpKeywords = ['yardim', 'yardım', 'help', 'komut', 'destek'];
 
     if (balanceKeywords.some((k) => message.includes(k))) return 'balance';
     if (paymentKeywords.some((k) => message.includes(k))) return 'payment';
@@ -117,9 +117,9 @@ export class WhatsAppService {
       return this.createTextResponse(from, `Merhaba ${user.firstName},\n\nBorç bulunmamaktadır. 🎉\n\nBaşka bir konuda yardımcı olabilir misiniz?`);
     }
 
-    const totalDebt = balance.reduce((sum, c) => sum + c.amount, 0);
-    const totalPaid = balance.reduce((sum, c) => sum + c.payments.reduce((s: number, p: any) => s + p.amount, 0), 0);
-    const totalLateFee = balance.reduce((sum, c) => sum + c.lateFees.reduce((s: number, f: any) => s + f.amount, 0), 0);
+    const totalDebt = balance.reduce((sum: number, c: any) => sum + c.amount, 0);
+    const totalPaid = balance.reduce((sum: number, c: any) => sum + c.payments.reduce((s: number, p: any) => s + p.amount, 0), 0);
+    const totalLateFee = balance.reduce((sum: number, c: any) => sum + c.lateFees.reduce((s: number, f: any) => s + f.amount, 0), 0);
     const remaining = totalDebt - totalPaid + totalLateFee;
 
     let response = `Sayın ${user.firstName} ${user.lastName},\n\n`;

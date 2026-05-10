@@ -3,7 +3,7 @@
 **Proje:** Vekil  
 **Domain:** vekil.tasci.cloud  
 **GitHub:** github.com/suleymantasci/vekil  
-**Durum:** Faz 2 Geliştirme Aşamasında
+**Durum:** Faz 3 Tamamlandı
 
 ---
 
@@ -14,38 +14,30 @@
 - [x] NestJS proje yapısı + Prisma şeması
 - [x] JWT Auth (login, register, refresh token)
 - [x] Organization/Building/Apartment modelleri
-- [x] User + Role + Permission sistemi (6 rol, 45+ permission)
+- [x] User + Role + Permission sistemi (6 rol, 50+ permission)
 - [x] CI/CD pipeline (GitHub Actions → hostinger)
 - [x] Audit logging for all mutations
 - [x] KVKK aydınlatma metni sayfası
 - [x] Client auth pages (login/register/dashboard)
 - [x] Buildings CRUD yönetimi
 
-### ✅ Faz 2 — Finans Motoru + WhatsApp (2026-05-10)
-- [x] TahakkukRule model + service
-- [x] Charge model (aidat borçlandırma)
-- [x] LateFee model + KMK Madde 20 hesaplama (%5/ay)
-- [x] Payment model + service
-- [x] Invoice model
-- [x] Tahakkuk generateCharges() — dönem bazlı borçlandırma
-- [x] Daire borç durumu sorgulama
-- [x] 40+ finance permission eklendi
-- [x] **Client UI**: Tahakkuk Rules sayfası
-- [x] **Client UI**: Charges (Borçlar) sayfası
-- [x] **Client UI**: Payments (Ödemeler) sayfası
-- [x] **Client UI**: Dashboard finance summary cards
-- [x] **API Client**: tahakkukApi + paymentsApi
+### ✅ Faz 2 — Finans Motoru (2026-05-10)
+- [x] TahakkukRule, Charge, LateFee, Payment, Invoice modelleri
+- [x] KMK Madde 20 gecikme faizi (%5/ay, günlük işletim)
+- [x] Dönem bazlı borçlandırma (fixed, area_m2, share_ratio)
+- [x] Ödeme + otomatik dağıtım
+- [x] Client UI: Tahakkuk Rules, Charges, Payments pages
+- [x] 40+ finance permissions
+- [x] Unit tests (24 passing)
 
-### ⏳ Faz 2 Kalan İşler
-- [ ] WhatsApp Business API entegrasyonu (API key bekleniyor)
-- [ ] KVKK opt-in onay mekanizması (WhatsApp chatbot için)
-- [ ] Borç/sorgu endpoint'leri (WhatsApp üzerinden borç sorgulama)
-
-### ⏳ Faz 3 — AI Chatbot + Teknik Servis
-- [ ] RAG tabanlı WhatsApp chatbot (OpenAI/Gemini)
-- [ ] Arıza bildirimi → iş emri dönüşümü
-- [ ] Demirbaş (asset) yönetimi
-- [ ] QR kodlu teknik servisi kontrolü
+### ✅ Faz 3 — AI Chatbot + Teknik Servis (2026-05-10)
+- [x] WorkOrders module (CRUD, status, priority, assignment)
+- [x] Assets module (CRUD, warranty tracking)
+- [x] WhatsApp chatbot service (intent classification, auto responses)
+- [x] WhatsApp webhook (Meta verification, incoming messages)
+- [x] KVKK consent management for WhatsApp
+- [x] Client UI: Work Orders + Assets pages
+- [x] Phase 3 permissions (workorders, assets, whatsapp)
 
 ### ⏳ Faz 4 — Operasyon ve Sakin Deneyimi
 - [ ] Rezervasyon sistemi (tesis, kort, otopark)
@@ -57,38 +49,35 @@
 - [ ] PostGIS geo-fencing (personel konum doğrulama)
 - [ ] Next.js SSR + JSON-LD structured data
 - [ ] RAKIP ANALİZİ → eksik modüllerin tespiti
-- [ ] Ek modüllerin eklenmesi
 
 ---
 
 ## Son Commit
-- `6b3a86a` - feat(vekil): Phase 2 - Finance UI pages
+- `c007cf6` - feat(vekil): Phase 3 UI pages
 
 ## Commit History
-- `42c35ff` - feat(vekil): Complete Phase 1 foundation
-- `8158d91` - feat(vekil): Phase 2 - Finance Engine (backend)
-- `6b3a86a` - feat(vekil): Phase 2 - Finance UI pages (frontend)
+- `42c35ff` - Phase 1 foundation
+- `8158d91` - Phase 2 finance engine (backend)
+- `6b3a86a` - Phase 2 finance UI pages
+- `ec337e3` - Phase 2 unit tests (24 passing)
+- `73932e1` - Phase 3 backend (Work Orders, Assets, WhatsApp)
+- `c007cf6` - Phase 3 UI pages
 
-## Client Routes
-- `/login` — Giriş
-- `/register` — Kayıt
-- `/kvkk` — KVKK Aydınlatma Metni
-- `/dashboard` — Ana panel (finans özeti + hızlı işlemler)
-- `/buildings` — Bina CRUD
-- `/charges` — Tahakkuk (borçlar) listesi
-- `/payments` — Ödemeler listesi + kaydet
-- `/settings/tahakkuk-rules` — Aidat kuralları yönetimi
+## WhatsApp Chatbot Komutları
+- `/borcum` - Borç durumu sorgulama
+- `/odemelerim` - Son ödemeler
+- `/bildirim` - Arıza bildirimi
+- `/yardim` - Yardım
 
-## API Endpoints (Phase 2)
-- `POST /tahakkuk/rules` — Kural oluştur
-- `GET /tahakkuk/rules` — Kuralları listele
-- `POST /tahakkuk/generate` — Tahakkuk oluştur
-- `GET /tahakkuk/charges` — Borçları listele
-- `GET /tahakkuk/apartment/:id/balance` — Daire borç durumu
-- `POST /tahakkuk/calculate-late-fees` — Gecikme faizi hesapla
-- `POST /payments` — Ödeme kaydet
-- `GET /payments` — Ödemeleri listele
+## API Endpoints (Phase 3)
+- `POST /work-orders` - İş emri oluştur
+- `GET /work-orders` - İş emirleri listesi
+- `PUT /work-orders/:id/assign` - Atama
+- `GET /assets` - Demirbaşlar
+- `GET /assets/:id/warranty` - Garanti durumu
+- `POST /whatsapp/webhook` - WhatsApp mesajları
+- `POST /whatsapp/opt-in` - KVKK onayı
 
 ## Deployment
-- Traefik ile vekil.tasci.cloud üzerinde çalışıyor
-- Docker Compose ile yönetiliyor
+- Traefik ile vekil.tasci.cloud
+- Docker Compose
