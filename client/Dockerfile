@@ -11,6 +11,10 @@ WORKDIR /app/client
 COPY --from=deps /app/client/node_modules ./node_modules
 COPY client/ ./
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
 RUN npm run build
 
 FROM base AS runner
