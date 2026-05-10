@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { RequestContextMiddleware } from './common/middleware/request-context.middleware';
+import { RequestContextMiddleware, createRequestContextMiddleware } from './common/middleware/request-context.middleware';
 import { createSecurityMiddleware } from './common/middleware/security.middleware';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
@@ -21,7 +21,7 @@ async function bootstrap() {
 
   // Global middleware - use functional middleware to avoid class constructor error
   app.use(createSecurityMiddleware());
-  app.use(RequestContextMiddleware);
+  app.use(createRequestContextMiddleware());
 
   // Global validation pipe
   app.useGlobalPipes(
