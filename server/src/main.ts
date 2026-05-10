@@ -19,8 +19,9 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
-  // Global middleware
-  app.use(SecurityHeadersMiddleware);
+  // Global middleware - instantiate and bind to avoid class constructor error with Express
+  const securityMiddleware = new SecurityHeadersMiddleware();
+  app.use(securityMiddleware.use.bind(securityMiddleware));
   app.use(RequestContextMiddleware);
 
   // Global validation pipe
