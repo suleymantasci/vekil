@@ -5,10 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 // Common
-import { RateLimitService } from './common/services/rate-limit.service';
-import { AuthThrottlerGuard } from './common/guards/auth-throttler.guard';
-import { AuthenticatedThrottlerGuard } from './common/guards/authenticated-throttler.guard';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { CommonModule } from './common/common.module';
 
 // Modules
 import { AuthModule } from './auth/auth.module';
@@ -60,6 +57,10 @@ import { AnnouncementsModule } from './announcements/announcements.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+
+    // Global providers (guards, services)
+    CommonModule,
+
 
     // Rate limiting configuration
     // - Auth endpoints: handled by AuthThrottlerGuard (IP-based, route-specific)
