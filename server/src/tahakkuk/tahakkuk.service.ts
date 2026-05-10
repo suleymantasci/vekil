@@ -183,7 +183,7 @@ export class TahakkukService {
       },
       include: {
         apartment: { include: { building: true } },
-        user: { select: { id: true, firstName: true, lastName: true, phone: true } },
+        
         payments: true,
         lateFees: true,
       },
