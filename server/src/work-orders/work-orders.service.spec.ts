@@ -28,6 +28,7 @@ describe('WorkOrdersService', () => {
         status: 'open',
         priority: 'medium',
         category: 'other',
+        buildingId: 'bld-1',
       };
 
       prisma.workOrder.create.mockResolvedValue(mockWorkOrder);
@@ -42,6 +43,8 @@ describe('WorkOrdersService', () => {
       expect(prisma.workOrder.create).toHaveBeenCalledWith({
         data: {
           reportedBy: 'user-1',
+          organizationId: 'org-1',
+          buildingId: 'bld-1',
           title: 'Asansör arızası',
           description: 'Asansör çalışmıyor',
           assetId: null,
@@ -63,6 +66,7 @@ describe('WorkOrdersService', () => {
         description: 'Tesisat su kaçırıyor',
         priority: 'urgent',
         category: 'plumbing',
+        buildingId: 'bld-1',
       };
 
       prisma.workOrder.create.mockResolvedValue(mockWorkOrder);
@@ -72,6 +76,7 @@ describe('WorkOrdersService', () => {
         description: 'Tesisat su kaçırıyor',
         priority: 'urgent',
         category: 'plumbing',
+        buildingId: 'bld-1',
       });
 
       expect(prisma.workOrder.create).toHaveBeenCalledWith({
